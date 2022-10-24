@@ -1,6 +1,6 @@
-{% set name = "eddl-cpu" %}  # eddl-cpu, eddl-gpu, eddl-cudnn
+{% set name = "eddl-cudnn" %}  # eddl-cpu, eddl-gpu, eddl-cudnn
 {% set version = "1.1b" %}
-{% set sha256 = "534ca4bd5e83236c164a26a058e08df971d28c0ae5b32674bec364ae0370843a" %}
+{% set sha256 = "b9fe2bdc63808ae8e1a8eec96f66106c49b7a5ce9ee32ffe17fd6cf9d1b2c4ec" %}
 
 package:
   name: {{ name|lower }}

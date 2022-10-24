@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.9.2)
 
 # User options
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
+option(BUILD_RISCV "Compile for a RISCV cpu" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
 option(BUILD_OPENMP "Compile using OpenMP" ON)
 option(BUILD_HPC "Compile using aggressive flags for performance" ON)

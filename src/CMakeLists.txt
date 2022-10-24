@@ -12,6 +12,7 @@ set_property(CACHE BUILD_TARGET PROPERTY STRINGS CPU GPU CUDNN FPGA)
 
 # Initializations (Local's scope)
 SET(USE_OPENMP OFF)
+SET(USE_RISCV OFF)
 SET(USE_CUDA OFF)
 SET(USE_CUDNN OFF)
 SET(USE_FPGA OFF)
@@ -20,6 +21,8 @@ SET(USE_PROTOBUF OFF)
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
 if(${BUILD_TARGET} STREQUAL "CPU")
+elseif(${BUILD_TARGET} STREQUAL "RISCV")
+    SET(USE_RISCV ON) # Local's scope
 elseif(${BUILD_TARGET} STREQUAL "GPU" OR ${BUILD_TARGET} STREQUAL "CUDA")
     SET(USE_CUDA ON) # Local's scope
 elseif(${BUILD_TARGET} STREQUAL "CUDNN")
@@ -121,6 +124,11 @@ endif()
 ###########################################################################
 ########################## COMPILE FOR RISK-V #############################
 ###########################################################################
+
+if(USE_RISCV)
+    set(CMAKE_C_FLAGS_RELEASE "-O2 -march=rv64imafdc -mabi=lp64d ")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=rv64imafdc -mabi=lp64d ")
+endif()
 
 if(RISKV_COMPILER_PATH)
     message(STATUS "Compiling for Risk-V...")
@@ -499,10 +507,8 @@ if(USE_FPGA)
     message(STATUS "OpenCL include: " ${OpenCL_INCLUDE_DIRS} )
     message(STATUS "OpenCL libraries: " ${OpenCL_LIBRARIES} )
 endif()
-if(RISKV_COMPILER_PATH)
-    message(STATUS "-------------------------------------------" )
-    message(STATUS "Risk-V compiler: " ${RISKV_COMPILER_PATH} )
-endif()
+message(STATUS "-------------------------------------------" )
+message(STATUS "RISCV enabled: " ${USE_RISCV} )
 message(STATUS "-------------------------------------------" )
 message(STATUS "Eigen3 root dir: " ${Eigen3_DIR} )
 message(STATUS "Eigen3 include: " ${EIGEN3_INCLUDE_DIR} )

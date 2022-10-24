@@ -293,15 +293,19 @@ void ConvolDescriptor3D::resize(int b)
 #endif
 
 #ifdef cCUDNN
+    cudnnDestroyTensorDescriptor(xDesc);
+    cudnnDestroyTensorDescriptor(yDesc);
+
+    cudnnCreateTensorDescriptor(&xDesc);
+    cudnnCreateTensorDescriptor(&yDesc);
+
    int dims[5] = {b, iz, id, ir, ic};
    int str[5] = {iz*id*ir*ic,id*ir*ic,ir*ic,ic,1};
-   cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
+    cudnnSetTensorNdDescriptor(xDesc, /*tensor_format,*/ data_type,5,dims,str);
 
    int ydims[5] = {b,z,d,r,c};
    int ystr[5] = {z*d*r*c, d*r*c, r*c, c, 1};
-   cudnnSetTensorNdDescriptor(yDesc, /*tensor_format,*/ data_type, 5, ydims, ystr);
-
-   //cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+    cudnnSetTensorNdDescriptor(yDesc, /*tensor_format,*/ data_type, 5, ydims, ystr);
 
    cudnn_env_init = -1;
    cudnn_conv_back_init = -1;

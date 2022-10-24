@@ -131,8 +131,7 @@ void PoolDescriptor::build(Tensor *A) {
     tensor_format = CUDNN_TENSOR_NCHW;  // CUDNN_TENSOR_NHWC
 
     cudnnCreateTensorDescriptor(&xDesc);
-    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 in,iz,ir,ic);
+    cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type, in,iz,ir,ic);
     cudnnCreateTensorDescriptor(&yDesc);
     cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
 }
@@ -146,10 +145,14 @@ void PoolDescriptor::resize(int b) {
   this->O->resize(b);
 #ifdef cCUDNN
     if(!this->O->isCPU()){
-   cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type,
-                 b,iz,ir,ic);
-   cudnnCreateTensorDescriptor(&yDesc);
-   cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, O->shape[0], O->shape[1],O->shape[2],O->shape[3]);
+        cudnnDestroyTensorDescriptor(xDesc);
+        cudnnDestroyTensorDescriptor(yDesc);
+
+        cudnnCreateTensorDescriptor(&xDesc);
+        cudnnCreateTensorDescriptor(&yDesc);
+
+       cudnnSetTensor4dDescriptor(xDesc, tensor_format, data_type, b,iz,ir,ic);
+       cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, b, O->shape[1],O->shape[2],O->shape[3]);
 }
 #endif
 //  if (!mem_level) { D->resize(b); }

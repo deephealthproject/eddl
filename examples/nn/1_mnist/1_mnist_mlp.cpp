@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 
     // Settings
     int epochs = (testing) ? 2 : 10;
-    int batch_size = 200;
+    int batch_size = 100;
     int num_classes = 10;
 
     // Define network
