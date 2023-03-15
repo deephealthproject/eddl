@@ -41,6 +41,11 @@ void Tensor::fill(Tensor* A, float v){
 #endif
 }
 
+vector<float> Tensor::to_std()
+{
+   std::vector<float> vf{ptr, ptr + size};
+   return vf;
+} 
 
 void Tensor::permute_(const vector<int>& dims){
     Tensor* temp = Tensor::permute(this, dims);

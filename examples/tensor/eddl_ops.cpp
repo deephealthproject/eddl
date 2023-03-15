@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
 
     vector<int> shape = {5, 5};
 
+
     // ***************************************************
     // Create tensor *************************************
     // ***************************************************
@@ -38,6 +39,13 @@ int main(int argc, char **argv) {
     t1->info();
     t1->print();
     cout << endl;
+
+    std::vector<float> vf=t1->to_std();
+
+    printf("%d\n",vf.size());
+    printf("%f\n",vf[4]);
+
+    getchar();
 
     t2 = Tensor::full({5, 1}, 5);
     cout << "Tensor 2: ********************" << endl;

@@ -199,6 +199,7 @@ public:
     */
     int isCPU();
 
+
     /**
       *  @brief Check if the tensor is in GPU.
       *
@@ -819,6 +820,12 @@ public:
     */
     Tensor* mean(vector<int> axis, bool keepdims);
     static void mean(Tensor* A, Tensor *B, ReduceDescriptor2 *rd);
+
+  /**
+    *   @brief Obtain an stdvector
+    *   @return std vector object
+    */
+   vector<float> to_std();
 
     /**
     *   @brief Obtain the median value of all the elements in the tensor
