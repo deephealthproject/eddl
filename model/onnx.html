@@ -178,7 +178,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">save_net_to_onnx_file</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">save_net_to_onnx_file</span><span class="p">(</span><span class="n">net</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -203,7 +203,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Net</span><span class="o">*</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Net</span><span class="o">*</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="cpp function">
@@ -226,7 +226,7 @@
 </dd></dl>
 
 <p>Example:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Net</span><span class="o">*</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">});</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Net</span><span class="o">*</span><span class="w"> </span><span class="n">net</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">import_net_from_onnx_file</span><span class="p">(</span><span class="s">&quot;my_model.onnx&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">});</span>
 </pre></div>
 </div>
 </div>
@@ -237,28 +237,28 @@
 you try to “standardize” or “simplifying” using <em>onnx_simplifier_</em>.</p>
 <p><strong>Installation</strong></p>
 <p>This is only needed is you are not using the conda environment for the EDDL, as we ship ONNX simplifier with it.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install -U pip <span class="o">&amp;&amp;</span> pip3 install onnx-simplifier
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>onnx-simplifier
 </pre></div>
 </div>
 <p><strong>Example #1:</strong> Simplifying a “ResNet18” (one input)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download onnx model from: https://github.com/onnx/models/tree/master/vision/classification/resnet</span>
 
 <span class="c1"># Simplify</span>
-python3 -m onnxsim resnet18-v1-7.onnx resnet18-v1-7_simplify.onnx
+python3<span class="w"> </span>-m<span class="w"> </span>onnxsim<span class="w"> </span>resnet18-v1-7.onnx<span class="w"> </span>resnet18-v1-7_simplify.onnx
 </pre></div>
 </div>
 <p><strong>Example #2:</strong> Simplifying a “MobileNet” (input’s shape required)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download onnx model from: https://github.com/onnx/models/tree/master/vision/classification/mobilenet</span>
 
 <span class="c1"># Simplify</span>
-python3 -m onnxsim mobilenetv2-7.onnx mobilenetv2-7_simplified.onnx --input-shape <span class="m">1</span>,3,224,224
+python3<span class="w"> </span>-m<span class="w"> </span>onnxsim<span class="w"> </span>mobilenetv2-7.onnx<span class="w"> </span>mobilenetv2-7_simplified.onnx<span class="w"> </span>--input-shape<span class="w"> </span><span class="m">1</span>,3,224,224
 </pre></div>
 </div>
 <p><strong>Example #3:</strong> Simplifying a “TinyYOLOv3” (two inputs, one dynamic)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download onnx model from: https://github.com/onnx/models/tree/master/vision/object_detection_segmentation/tiny-yolov3</span>
 
 <span class="c1"># Simplify</span>
-python3 -m onnxsim tiny-yolov3-11.onnx tiny-yolov3-11_simplified.onnx --dynamic-input-shape --input-shape input_1:1,3,416,416 image_shape:1,2
+python3<span class="w"> </span>-m<span class="w"> </span>onnxsim<span class="w"> </span>tiny-yolov3-11.onnx<span class="w"> </span>tiny-yolov3-11_simplified.onnx<span class="w"> </span>--dynamic-input-shape<span class="w"> </span>--input-shape<span class="w"> </span>input_1:1,3,416,416<span class="w"> </span>image_shape:1,2
 </pre></div>
 </div>
 </div>

@@ -173,7 +173,7 @@
 <p>A package for EDDL is available on <a class="reference external" href="https://www.anaconda.com/">Anaconda</a>.
 You can use one of the following lines according to your needs:</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">CPU</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">GPU (CUDA)</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">GPU (cuDNN)</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-cpu
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">CPU</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">GPU (CUDA)</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">GPU (cuDNN)</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>deephealth<span class="w"> </span>eddl-cpu
 </pre></div>
 </div>
 <div class="admonition note">
@@ -182,7 +182,7 @@ You can use one of the following lines according to your needs:</p>
 <li><p>Platforms supported: Linux and MacOS</p></li>
 </ul>
 </div>
-</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-gpu
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>deephealth<span class="w"> </span>eddl-gpu
 </pre></div>
 </div>
 <div class="admonition note">
@@ -191,7 +191,7 @@ You can use one of the following lines according to your needs:</p>
 <li><p>Platforms supported: Linux</p></li>
 </ul>
 </div>
-</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c deephealth eddl-cudnn
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>deephealth<span class="w"> </span>eddl-cudnn
 </pre></div>
 </div>
 <div class="admonition note">
@@ -207,10 +207,10 @@ You can use one of the following lines according to your needs:</p>
 <p>A package for EDDL is available on the homebrew package manager.
 You need to run both lines, one to add the tap and the other to install the library.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add deephealth tap</span>
-brew tap deephealthproject/homebrew-tap
+brew<span class="w"> </span>tap<span class="w"> </span>deephealthproject/homebrew-tap
 
 <span class="c1"># Install EDDL</span>
-brew install eddl
+brew<span class="w"> </span>install<span class="w"> </span>eddl
 </pre></div>
 </div>
 <img alt="../_images/cmake.svg" src="../_images/cmake.svg" /></div>
@@ -235,17 +235,17 @@ brew install eddl
 </div>
 <div class="sphinx-tabs docutils container">
 <div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">Linux</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">MacOS</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">Windows</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
-git clone https://github.com/deephealthproject/eddl.git
-<span class="nb">cd</span> eddl/
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/deephealthproject/eddl.git
+<span class="nb">cd</span><span class="w"> </span>eddl/
 
 <span class="c1"># Install dependencies</span>
-conda env create -f environment.yml
-conda activate eddl
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+conda<span class="w"> </span>activate<span class="w"> </span>eddl
 
 <span class="c1"># Build and install</span>
-mkdir build
-<span class="nb">cd</span> build
-cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..<span class="w"> </span>-DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
 
 <span class="c1"># [GPU ONLY] CUDA 10/11 does not support gcc versions later than 8.</span>
 <span class="c1"># You *might* need to add these flags:</span>
@@ -253,25 +253,25 @@ cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREF
 <span class="c1"># -DCMAKE_C_COMPILER=$(which gcc-7) \</span>
 <span class="c1"># -DCMAKE_CXX_COMPILER=$(which g++-7) \</span>
 
-make -j<span class="k">$(</span>nproc<span class="k">)</span>  <span class="c1"># The -j flag is to parallelize the compilation</span>
-make install
+make<span class="w"> </span>-j<span class="k">$(</span>nproc<span class="k">)</span><span class="w">  </span><span class="c1"># The -j flag is to parallelize the compilation</span>
+make<span class="w"> </span>install
 </pre></div>
 </div>
 </div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download source code</span>
-git clone https://github.com/deephealthproject/eddl.git
-<span class="nb">cd</span> eddl/
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/deephealthproject/eddl.git
+<span class="nb">cd</span><span class="w"> </span>eddl/
 
 <span class="c1"># Install dependencies</span>
-conda env create -f environment.yml
-conda activate eddl
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+conda<span class="w"> </span>activate<span class="w"> </span>eddl
 
 <span class="c1"># Build and install</span>
-mkdir build
-<span class="nb">cd</span> build
-cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..<span class="w"> </span>-DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
 
-make -j<span class="k">$(</span>sysctl -n hw.logicalcpu<span class="k">)</span>  <span class="c1"># The -j flag is to parallelize the compilation</span>
-make install
+make<span class="w"> </span>-j<span class="k">$(</span>sysctl<span class="w"> </span>-n<span class="w"> </span>hw.logicalcpu<span class="k">)</span><span class="w">  </span><span class="c1"># The -j flag is to parallelize the compilation</span>
+make<span class="w"> </span>install
 </pre></div>
 </div>
 </div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><div class="highlight-batch notranslate"><div class="highlight"><pre><span></span># Download source code
@@ -306,17 +306,17 @@ with:</em> <code class="docutils literal notranslate"><span class="pre">-DCMAKE_
 <ol class="arabic simple" start="5">
 <li><p>If you don’t want to install <a class="reference external" href="https://www.anaconda.com/">Anaconda</a>, you can compile it using:</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake .. -DBUILD_SUPERBUILD<span class="o">=</span>ON -DBUILD_TARGET<span class="o">=</span>CUDNN -DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc -DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake<span class="w"> </span>..<span class="w"> </span>-DBUILD_SUPERBUILD<span class="o">=</span>ON<span class="w"> </span>-DBUILD_TARGET<span class="o">=</span>CUDNN<span class="w"> </span>-DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc<span class="w"> </span>-DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7
 </pre></div>
 </div>
 <ol class="arabic simple" start="6">
 <li><p>To update/remote the eddl environment type:</p></li>
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update existing environment</span>
-conda env update --file environment.yml --prune
+conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>--file<span class="w"> </span>environment.yml<span class="w"> </span>--prune
 
 <span class="c1"># Remove environment</span>
-conda remove --name eddl --all
+conda<span class="w"> </span>remove<span class="w"> </span>--name<span class="w"> </span>eddl<span class="w"> </span>--all
 </pre></div>
 </div>
 </div>

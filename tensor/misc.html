@@ -169,7 +169,7 @@
 </dl>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">hardware_supported</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">hardware_supported</span><span class="p">();</span>
 <span class="c1">// {&quot;cpu&quot;, &quot;cuda&quot;, &quot;cuda&quot;, &quot;fpga&quot;}</span>
 </pre></div>
 </div>
@@ -187,7 +187,7 @@
 </dl>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">supported</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">is_hardware_supported</span><span class="p">(</span><span class="s">&quot;cudnn&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">supported</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">is_hardware_supported</span><span class="p">(</span><span class="s">&quot;cudnn&quot;</span><span class="p">);</span>
 <span class="c1">// true</span>
 </pre></div>
 </div>
@@ -205,7 +205,7 @@
 </dl>
 </dd></dl>
 
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">new_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">getDeviceID</span><span class="p">(</span><span class="s">&quot;cuda:0&quot;</span><span class="p">));</span><span class="w"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">new_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tensor</span><span class="p">({</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">getDeviceID</span><span class="p">(</span><span class="s">&quot;cuda:0&quot;</span><span class="p">));</span>
 </pre></div>
 </div>
 </div>

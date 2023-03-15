@@ -197,10 +197,10 @@ support AVX instructions.</p>
 the GCC compile so that you can take advantange of OpenMP.
 <em>(Note: By default, GCC is just a symlink to Clang. more_)</em></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the real GCC</span>
-brew install gcc
+brew<span class="w"> </span>install<span class="w"> </span>gcc
 
 <span class="c1"># Add flags to cmake</span>
-cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
+cmake<span class="w"> </span>..<span class="w"> </span>-DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span>
 -DCMAKE_C_COMPILER<span class="o">=</span>/usr/local/Cellar/gcc/10.2.0_3/bin/gcc-10
 -DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/local/Cellar/gcc/10.2.0_3/bin/g++-10
 </pre></div>
@@ -218,15 +218,15 @@ cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREF
 <p>If this does not work, check if the following paths are correctly setup:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># NOTE: This is a copy-paste from &quot;brew&quot;, but for linux should be quite similar.</span>
 
-If you need to have openssl@1.1 first <span class="k">in</span> your PATH run:
-  <span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;/usr/local/opt/openssl@1.1/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.zshrc
+If<span class="w"> </span>you<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>have<span class="w"> </span>openssl@1.1<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>your<span class="w"> </span>PATH<span class="w"> </span>run:
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PATH=&quot;/usr/local/opt/openssl@1.1/bin:$PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
 
-For compilers to find openssl@1.1 you may need to set:
-  <span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/openssl@1.1/lib&quot;</span>
-  <span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/openssl@1.1/include&quot;</span>
+For<span class="w"> </span>compilers<span class="w"> </span>to<span class="w"> </span>find<span class="w"> </span>openssl@1.1<span class="w"> </span>you<span class="w"> </span>may<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>set:
+<span class="w">  </span><span class="nb">export</span><span class="w"> </span><span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/openssl@1.1/lib&quot;</span>
+<span class="w">  </span><span class="nb">export</span><span class="w"> </span><span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/openssl@1.1/include&quot;</span>
 
-For pkg-config to find openssl@1.1 you may need to set:
-  <span class="nb">export</span> <span class="nv">PKG_CONFIG_PATH</span><span class="o">=</span><span class="s2">&quot;/usr/local/opt/openssl@1.1/lib/pkgconfig&quot;</span>
+For<span class="w"> </span>pkg-config<span class="w"> </span>to<span class="w"> </span>find<span class="w"> </span>openssl@1.1<span class="w"> </span>you<span class="w"> </span>may<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>set:
+<span class="w">  </span><span class="nb">export</span><span class="w"> </span><span class="nv">PKG_CONFIG_PATH</span><span class="o">=</span><span class="s2">&quot;/usr/local/opt/openssl@1.1/lib/pkgconfig&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -238,10 +238,10 @@ compiler either with the flag <code class="docutils literal notranslate"><span c
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># In MacOS we recommend CLang</span>
 
 <span class="c1"># Set env variables</span>
-<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
-<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
-<span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
-<span class="nb">export</span> <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang
+<span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>/usr/local/opt/llvm/bin/clang++
+<span class="nb">export</span><span class="w"> </span><span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/opt/llvm/lib&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;-I/usr/local/opt/llvm/include&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -263,23 +263,23 @@ compiler either with the flag <code class="docutils literal notranslate"><span c
 <div class="section" id="missing-includes">
 <h3>Missing includes<a class="headerlink" href="#missing-includes" title="Permalink to this headline"></a></h3>
 <p>If you get an error like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.../eddl/src/serialization/onnx/onnx.pb.h:10:10: fatal error: google/protobuf/port_def.inc: No such file or directory
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.../eddl/src/serialization/onnx/onnx.pb.h:10:10:<span class="w"> </span>fatal<span class="w"> </span>error:<span class="w"> </span>google/protobuf/port_def.inc:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
 <span class="c1">#include &lt;google/protobuf/port_def.inc&gt;</span>
 </pre></div>
 </div>
 <p>First, make sure that you have protobuf installed and cmake is detecting the paths correctly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-- Protobuf include: /usr/include
--- Protobuf libraries: /usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
--- Protobuf compiler: /usr/bin/protoc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--<span class="w"> </span>Protobuf<span class="w"> </span>include:<span class="w"> </span>/usr/include
+--<span class="w"> </span>Protobuf<span class="w"> </span>libraries:<span class="w"> </span>/usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
+--<span class="w"> </span>Protobuf<span class="w"> </span>compiler:<span class="w"> </span>/usr/bin/protoc
 </pre></div>
 </div>
 <p>If you are using conda, first check that you have activated the environment: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">eddl</span></code>.
 Then, if the error persists, check if the paths of protobuf outputed by CMake have been mixed up with the paths from
 the system (in case protobuf is also installed in the system) like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-- Protobuf dir:
--- Protobuf include: /usr/include
--- Protobuf libraries: /usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
--- Protobuf compiler: /home/salvacarrion/anaconda3/envs/eddl/bin/protoc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--<span class="w"> </span>Protobuf<span class="w"> </span>dir:
+--<span class="w"> </span>Protobuf<span class="w"> </span>include:<span class="w"> </span>/usr/include
+--<span class="w"> </span>Protobuf<span class="w"> </span>libraries:<span class="w"> </span>/usr/lib/x86_64-linux-gnu/libprotobuf.so-lpthread
+--<span class="w"> </span>Protobuf<span class="w"> </span>compiler:<span class="w"> </span>/home/salvacarrion/anaconda3/envs/eddl/bin/protoc
 </pre></div>
 </div>
 <p>You can try fixing it by forcing cmake to look into the conda env using the flags: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_PREFIX_PATH=$CONDA_PREFIX</span> <span class="pre">-DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX</span></code> (We recommend to delete the <code class="docutils literal notranslate"><span class="pre">build/</span></code> folder to avoid cache problems)</p>
@@ -288,7 +288,7 @@ the system (in case protobuf is also installed in the system) like this:</p>
 <div class="section" id="missing-lib">
 <h3>Missing lib<a class="headerlink" href="#missing-lib" title="Permalink to this headline"></a></h3>
 <p>If you get an error like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="o">[</span><span class="m">2</span><span class="o">]</span>: *** No rule to make target <span class="s1">&#39;cmake/third_party/protobuf/lib/libprotobuf.a&#39;</span>, needed by <span class="s1">&#39;lib64/libeddl.so&#39;</span>.  Stop.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="o">[</span><span class="m">2</span><span class="o">]</span>:<span class="w"> </span>***<span class="w"> </span>No<span class="w"> </span>rule<span class="w"> </span>to<span class="w"> </span>make<span class="w"> </span>target<span class="w"> </span><span class="s1">&#39;cmake/third_party/protobuf/lib/libprotobuf.a&#39;</span>,<span class="w"> </span>needed<span class="w"> </span>by<span class="w"> </span><span class="s1">&#39;lib64/libeddl.so&#39;</span>.<span class="w">  </span>Stop.
 </pre></div>
 </div>
 <p>It is because, when using <code class="docutils literal notranslate"><span class="pre">-DBUILD_SUPERBUILD=ON</span></code>, all critical dependencies are downloaded and compiled locally. These
@@ -297,7 +297,7 @@ that, in some systems, it can be found either on <code class="docutils literal n
 <p>Because the EDDL looks into <code class="docutils literal notranslate"><span class="pre">lib/</span></code> (by default), when the protobuf library appears in <code class="docutils literal notranslate"><span class="pre">lib64/</span></code> we cannot find it.
 To fix this, create a symbolic link from <code class="docutils literal notranslate"><span class="pre">lib64/</span></code> to <code class="docutils literal notranslate"><span class="pre">lib/</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inside: eddl/build/cmake/third_party/protobuf/</span>
-ln -s lib64 lib
+ln<span class="w"> </span>-s<span class="w"> </span>lib64<span class="w"> </span>lib
 </pre></div>
 </div>
 </div>
@@ -311,8 +311,8 @@ ln -s lib64 lib
 <code class="docutils literal notranslate"><span class="pre">onnx.proto</span></code>). We know that the current version of the EDDL (v0.7 at the moment of writing this) works with
 protobuf 3.11. To install it, you can either use the conda environment (recommended):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install dependencies</span>
-conda env create -f environment.yml
-conda activate eddl
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+conda<span class="w"> </span>activate<span class="w"> </span>eddl
 </pre></div>
 </div>
 <p>…or install protobuf manually:</p>
@@ -320,18 +320,18 @@ conda activate eddl
 <span class="nv">PROTOBUF_VERSION</span><span class="o">=</span><span class="m">3</span>.11.4
 
 <span class="c1"># Install requirements</span>
-sudo apt-get install -y wget
-sudo apt-get install -y autoconf automake libtool curl make g++ unzip
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>wget
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>curl<span class="w"> </span>make<span class="w"> </span>g++<span class="w"> </span>unzip
 
 <span class="c1"># Download source</span>
-wget https://github.com/protocolbuffers/protobuf/releases/download/v<span class="nv">$PROTOBUF_VERSION</span>/protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
-tar -xf protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
+wget<span class="w"> </span>https://github.com/protocolbuffers/protobuf/releases/download/v<span class="nv">$PROTOBUF_VERSION</span>/protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
+tar<span class="w"> </span>-xf<span class="w"> </span>protobuf-cpp-<span class="nv">$PROTOBUF_VERSION</span>.tar.gz
 
 <span class="c1"># Build and install</span>
-<span class="nb">cd</span> protobuf-<span class="nv">$PROTOBUF_VERSION</span>
+<span class="nb">cd</span><span class="w"> </span>protobuf-<span class="nv">$PROTOBUF_VERSION</span>
 ./configure
-make -j<span class="k">$(</span>nproc<span class="k">)</span>
-make install  <span class="c1"># you may need sudo</span>
+make<span class="w"> </span>-j<span class="k">$(</span>nproc<span class="k">)</span>
+make<span class="w"> </span>install<span class="w">  </span><span class="c1"># you may need sudo</span>
 ldconfig
 </pre></div>
 </div>
@@ -370,27 +370,27 @@ ldconfig
 <div class="section" id="unsupported-gnu-version">
 <h3>Unsupported GNU version<a class="headerlink" href="#unsupported-gnu-version" title="Permalink to this headline"></a></h3>
 <p>If you get an error like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/usr/include/crt/host_config.h:138:2: error: <span class="c1">#error -- unsupported GNU version! gcc versions later than 8 are not supported!</span>
-<span class="m">138</span> <span class="p">|</span> <span class="c1">#error -- unsupported GNU version! gcc versions later than 8 are not supported!</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/usr/include/crt/host_config.h:138:2:<span class="w"> </span>error:<span class="w"> </span><span class="c1">#error -- unsupported GNU version! gcc versions later than 8 are not supported!</span>
+<span class="m">138</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="c1">#error -- unsupported GNU version! gcc versions later than 8 are not supported!</span>
 </pre></div>
 </div>
 <p>It is because NVIDIA does not support all GNU compilers. Each new version of CUDA supports a different range of GNU compilers.
 The solution is to simply use a GNU C++ compiler with a version lower or equal to 8.x. You can do this by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>// Exporting these aliases to .bashrc
-<span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>gcc-7
-<span class="nb">export</span> <span class="nv">CXX</span><span class="o">=</span>g++-7
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>//<span class="w"> </span>Exporting<span class="w"> </span>these<span class="w"> </span>aliases<span class="w"> </span>to<span class="w"> </span>.bashrc
+<span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span>gcc-7
+<span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>g++-7
 
-// Or creating a symbolic link to the CUDA GCC
-sudo ln -s /usr/bin/gcc-7 /usr/local/cuda/bin/gcc
-sudo ln -s /usr/bin/g++-7 /usr/local/cuda/bin/g++
+//<span class="w"> </span>Or<span class="w"> </span>creating<span class="w"> </span>a<span class="w"> </span>symbolic<span class="w"> </span>link<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>CUDA<span class="w"> </span>GCC
+sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/usr/bin/gcc-7<span class="w"> </span>/usr/local/cuda/bin/gcc
+sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/usr/bin/g++-7<span class="w"> </span>/usr/local/cuda/bin/g++
 
-// ..or <span class="nb">set</span> the following flags on the cmake <span class="nb">command</span>
-cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span> <span class="se">\</span>
--DBUILD_TARGET<span class="o">=</span>CUDNN <span class="se">\</span>
--DCMAKE_C_COMPILER<span class="o">=</span>/usr/bin/gcc-7 <span class="se">\</span>
--DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7 <span class="se">\</span>
--DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc <span class="se">\</span>
--DCMAKE_CUDA_HOST_COMPILER<span class="o">=</span>/usr/bin/g++-7 <span class="se">\</span>
+//<span class="w"> </span>..or<span class="w"> </span><span class="nb">set</span><span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>flags<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>cmake<span class="w"> </span><span class="nb">command</span>
+cmake<span class="w"> </span>..<span class="w"> </span>-DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span><span class="se">\</span>
+-DBUILD_TARGET<span class="o">=</span>CUDNN<span class="w"> </span><span class="se">\</span>
+-DCMAKE_C_COMPILER<span class="o">=</span>/usr/bin/gcc-7<span class="w"> </span><span class="se">\</span>
+-DCMAKE_CXX_COMPILER<span class="o">=</span>/usr/bin/g++-7<span class="w"> </span><span class="se">\</span>
+-DCMAKE_CUDA_COMPILER<span class="o">=</span>/usr/local/cuda/bin/nvcc<span class="w"> </span><span class="se">\</span>
+-DCMAKE_CUDA_HOST_COMPILER<span class="o">=</span>/usr/bin/g++-7<span class="w"> </span><span class="se">\</span>
 </pre></div>
 </div>
 <p>Anyway, it is convenient to check which is the maximum GCC version that your CUDA supports.</p>
@@ -413,8 +413,8 @@ cmake .. -DCMAKE_PREFIX_PATH<span class="o">=</span><span class="nv">$CONDA_PREF
 -DCMAKE_PREFIX_PATH<span class="o">=</span>/path/to/dir
 
 <span class="c1"># Note:</span>
-To get the path, activate the environment and type:
-<span class="nb">echo</span> <span class="nv">$CONDA_PREFIX</span>
+To<span class="w"> </span>get<span class="w"> </span>the<span class="w"> </span>path,<span class="w"> </span>activate<span class="w"> </span>the<span class="w"> </span>environment<span class="w"> </span>and<span class="w"> </span>type:
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$CONDA_PREFIX</span>
 </pre></div>
 </div>
 </div>
@@ -423,13 +423,13 @@ To get the path, activate the environment and type:
 <h2>Dealing with Numpy files<a class="headerlink" href="#dealing-with-numpy-files" title="Permalink to this headline"></a></h2>
 <p>To convert EDDL files (.bin) to numpy files (.npy) or viceversa, we need to install the PyEDDL:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install numpy</span>
-pip install numpy
+pip<span class="w"> </span>install<span class="w"> </span>numpy
 
 <span class="c1"># Install PyEDDL</span>
-conda config --add channels dhealth
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda install -c dhealth pyeddl-cpu  <span class="c1"># or *-gpu</span>
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>dhealth
+conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w"> </span>channel_priority<span class="w"> </span>strict
+conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>dhealth<span class="w"> </span>pyeddl-cpu<span class="w">  </span><span class="c1"># or *-gpu</span>
 </pre></div>
 </div>
 <p><strong>- From Numpy (.npy) to EDDL (.bin) files:</strong></p>

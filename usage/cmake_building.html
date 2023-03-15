@@ -153,8 +153,8 @@
 <p>A better alternative for building programs using <cite>EDDL</cite> is to use <cite>cmake</cite>, especially if you are
 developing for several platforms. Assuming the following folder structure:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>first_example/
-   <span class="p">|</span>- main.cpp
-   <span class="p">|</span>- CMakeLists.txt
+<span class="w">   </span><span class="p">|</span>-<span class="w"> </span>main.cpp
+<span class="w">   </span><span class="p">|</span>-<span class="w"> </span>CMakeLists.txt
 </pre></div>
 </div>
 <p>A folder named <code class="docutils literal notranslate"><span class="pre">first_example</span></code> with two files inside: a <code class="docutils literal notranslate"><span class="pre">*.cpp</span></code> and a <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>.
@@ -174,9 +174,9 @@ subfolders: <code class="docutils literal notranslate"><span class="pre">include
 Examples of valid values for <code class="docutils literal notranslate"><span class="pre">CMAKE_INSTALL_PREFIX</span></code> on Unix platforms are <code class="docutils literal notranslate"><span class="pre">/usr/local</span></code>, <code class="docutils literal notranslate"><span class="pre">/opt</span></code>.</p>
 <p>The following commands create a directory for building (avoid building in the source folder), builds
 the first example with cmake and then runs the program:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build
-<span class="nb">cd</span> build
-cmake ..
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..
 make
 ./first_example
 </pre></div>

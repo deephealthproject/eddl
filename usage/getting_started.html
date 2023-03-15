@@ -161,16 +161,16 @@ the methods described in the installation section.</p>
 <div class="section" id="first-example">
 <h2>First example<a class="headerlink" href="#first-example" title="Permalink to this headline"></a></h2>
 <p>Copy this code to a new file and name it <code class="docutils literal notranslate"><span class="pre">main.cpp</span></code>:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;eddl/tensor/tensor.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;eddl/tensor/tensor.h&gt;</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[]){</span><span class="w"></span>
-<span class="w">    </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">});</span><span class="w"></span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Tensor sum=&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[]){</span>
+<span class="w">    </span><span class="n">Tensor</span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">::</span><span class="n">ones</span><span class="p">({</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">});</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Tensor sum=&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">t</span><span class="o">-&gt;</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>This example simply sums all the elements of a tensor.</p>
@@ -182,8 +182,8 @@ If you are not familiar with CMake, read the next section.</p>
 <p>A better alternative for building programs using <cite>EDDL</cite> is to use <cite>cmake</cite>, especially if you are
 developing for several platforms. Assuming the following folder structure:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>first_example/
-   <span class="p">|</span>- main.cpp
-   <span class="p">|</span>- CMakeLists.txt
+<span class="w">   </span><span class="p">|</span>-<span class="w"> </span>main.cpp
+<span class="w">   </span><span class="p">|</span>-<span class="w"> </span>CMakeLists.txt
 </pre></div>
 </div>
 <p>A folder named <code class="docutils literal notranslate"><span class="pre">first_example</span></code> with two files inside: a <code class="docutils literal notranslate"><span class="pre">*.cpp</span></code> and a <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>.
@@ -203,9 +203,9 @@ subfolders: <code class="docutils literal notranslate"><span class="pre">include
 Examples of valid values for <code class="docutils literal notranslate"><span class="pre">CMAKE_INSTALL_PREFIX</span></code> on Unix platforms are <code class="docutils literal notranslate"><span class="pre">/usr/local</span></code>, <code class="docutils literal notranslate"><span class="pre">/opt</span></code>.</p>
 <p>The following commands create a directory for building (avoid building in the source folder), builds
 the first example with cmake and then runs the program:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build
-<span class="nb">cd</span> build
-cmake ..
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..
 make
 ./first_example
 </pre></div>
