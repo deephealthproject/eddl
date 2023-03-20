@@ -32,7 +32,7 @@ echo "CPU_COUNT=$CPU_COUNT"
 echo "#################################################"
 
 # Build makefiles
-mkdir build && cd build/ && cmake .. -DBUILD_TARGET=CUDNN \
+mkdir build && cd build/ && cmake .. -DBUILD_TARGET=CPU \
       -DBUILD_SUPERBUILD=OFF \
       -DBUILD_EXAMPLES=OFF \
       -DBUILD_TESTS=OFF \
