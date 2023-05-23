@@ -1008,6 +1008,135 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
     return NULL;
 }
 
+void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
+    //    unsigned char bytesX[n_sizeX];
+    //    unsigned char bytesY[n_sizeY];
+    float* bytesX;
+    float* bytesY;
+    long i, j;
+    long index;
+    int err;
+    long int pos;
+    off_t posX, posY;
+    int n_read;
+#ifdef cMPI
+    MPI_Status status;
+#endif
+    
+    //printf("=== %s %d %d\n", __func__, buffer_index, ds_ptr);
+    //imprime_DG(__func__,DG);
+    //imprime_buffer(DG);
+    
+    
+    // Random batches of sequential items
+    bytesX = (float*) malloc(DG->n_sizeX*sizeof(float));
+    if (bytesX == NULL)
+        msg("Error bytesX memory allocation", __func__);
+    bytesY = (float*) malloc(DG->n_sizeY*sizeof(float));
+    if (bytesY == NULL)
+        msg("Error bytesY memory allocation", __func__);
+
+
+    //  printf("1 %s ds_ptr=%ld\n", __func__, ds_ptr);
+    if (DG->method==DG_PERFECT)
+      //  pos = DG->list[ds_ptr];
+      //pos = dg_vector[ds_ptr];
+      pos = dg_lista[ds_ptr];
+
+    else if (DG->method==DG_RANDOM) {
+        pos = rand() % DG->nbpp;
+    }  else if (DG->method==DG_LIN) {
+        pos = ds_ptr;
+    }  else  {
+        msg("Error unknwon method", __func__);
+    }
+ 
+    // fprintf(tmp_fp,"%s sizeof(size_t)=%d perfect=%d buffer_index=%d num_batches=%d sizes= %ld %ld pos=%d\n", __func__, sizeof(size_t), perfect, buffer_index, dg_num_batches, n_sizeX, n_sizeY,pos);
+    //fflush(tmp_fp);
+    //pos=0;
+
+
+    posX = (off_t) (DG->ndimX + 1) * sizeof (int)+(off_t) pos * DG->n_sizeX * sizeof (float);
+    //fprintf(tmp_fp,"%s ds_ptr=%d pos=%ld  \n", __func__, ds_ptr, posX);
+    //fflush(tmp_fp);
+    if (is_mpi_distributed() == 0) {
+        err = fseeko(DG->fpX, posX, SEEK_SET);
+        if (err) {
+            msg("Error fseek ", __func__);
+        }
+        n_read = fread(bytesX, sizeof (float), DG->n_sizeX, DG->fpX);
+    } else {
+#ifdef cMPI
+        MPICHECK(MPI_File_seek(DG->mfpX, posX, MPI_SEEK_SET));
+        MPICHECK(MPI_File_read(DG->mfpX, bytesX, DG->n_sizeX, MPI_FLOAT, &status));
+        MPICHECK(MPI_Get_count(&status, MPI_FLOAT, &n_read));
+#endif
+    }
+
+    if (n_read != DG->n_sizeX) {
+        printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeX);
+        msg("Error freadX ", __func__);
+    }
+    // printf("2 %s ds_ptr=%ld\n", __func__, ds_ptr);
+
+
+    //printf("%s count=%d buffer_index=%d ptr_out=%d pos=%ld\n",__func__,buffer_count,buffer_index,ptr_out,pos);
+    if (DEBUG)
+        printf("LOAD:");
+    //#pragma omp parallel for private(j,index)  
+    for (i = 0; i < DG->batch_size; i++) {
+        for (j = 0; j < DG->shape_sizeX; j++) {
+            index = i * DG->shape_sizeX + j;
+            //DG->bufferX[buffer_index]->ptr[index] = (float) bytesX[index];
+            dg_bufferX[buffer_index]->ptr[index] = bytesX[index];
+            //if (DEBUG)
+            //printf("[%d %3.1f ] ", index, DG->bufferX[buffer_index]->ptr[index]);
+            //printf("[%d ] ", index);
+        }
+    }
+    if (DEBUG) printf("\n");
+    posY = (off_t) (DG->ndimY + 1) * sizeof (int)+(off_t) pos * DG->n_sizeY * sizeof (float);
+    //printf("%s pos=%ld \n", __func__, pos);
+
+    if (is_mpi_distributed() == 0) {
+        err = fseeko(DG->fpY, posY, SEEK_SET);
+        if (err)
+            msg("Error fseek ", __func__);
+        n_read = fread(bytesY, sizeof (float), DG->n_sizeY, DG->fpY);
+    } else {
+#ifdef cMPI
+        MPICHECK(MPI_File_seek(DG->mfpY, posY, MPI_SEEK_SET));
+        MPICHECK(MPI_File_read(DG->mfpY, bytesY, DG->n_sizeY, MPI_FLOAT, &status));
+        MPICHECK(MPI_Get_count(&status, MPI_FLOAT, &n_read));
+#endif
+    }
+    if (n_read != DG->n_sizeY) {
+        printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeY);
+        msg("Error freadY ", __func__);
+ }
+
+    if (DEBUG) printf("LOAD:");
+    // #pragma omp parallel for private(j,index) 
+    for (i = 0; i < DG->batch_size; i++) {
+        for (j = 0; j < DG->shape_sizeY; j++) {
+            index = i * DG->shape_sizeY + j;
+            //DG->bufferY[buffer_index]->ptr[index] = (float) bytesY[index];
+            dg_bufferY[buffer_index]->ptr[index] = bytesY[index];
+            //printf("[%d ] ", index);
+            //            bufferY[index] = (float) 0;
+            //if (DEBUG) 
+            //  printf("[%d %3.1f ] ", index, bufferY[index]);
+        }
+    }
+    //      printf("4 %s ds_ptr=%ld\n", __func__, ds_ptr);
+    if (DEBUG) printf("\n");
+    free(bytesX);
+    free(bytesY);
+    //    printf("5 %s ds_ptr=%ld\n", __func__, ds_ptr);
+    return NULL;
+}
+
+
 
 void* producer_DataGen(void* arg) {
     bool run_producer = true;
@@ -1053,9 +1182,22 @@ void* producer_DataGen(void* arg) {
         //       fprintf(stdout,"3 %s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
         //  fflush(stdout);
         if (DG->distr_ds) {
-            loadXY_DataGen(DG, curr_ptr, curr_ds_ptr);
+            if (DG->datatype==DG_BYTE)
+                loadXY_DataGen(DG, curr_ptr, curr_ds_ptr);
+            else if (DG->datatype==DG_FLOAT)
+                loadXY_DataGen_float(DG, curr_ptr, curr_ds_ptr);
+            else {
+                msg("Error DG data type not supported ", __func__);
+            }
         } else {
-            loadXY_DataGen(DG, curr_ptr, id * DG->nbpp + curr_ds_ptr);
+            
+            if (DG->datatype==DG_BYTE)
+                loadXY_DataGen(DG, curr_ptr, id * DG->nbpp + curr_ds_ptr);
+            else if (DG->datatype==DG_FLOAT)
+                loadXY_DataGen_float(DG, curr_ptr, id * DG->nbpp + curr_ds_ptr);
+            else {
+                msg("Error DG data type not supported ", __func__);
+            }
         }
         TIME_POINT2(load, loadsecs);
         //        fprintf(stdout,"4 %s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
@@ -1107,7 +1249,7 @@ void create_dg_buffer(int size, const vector<int> shapeX,  const vector<int> sha
     printf(". Buffer size: %d\n", dg_buffer_size ); 
     }
    
-void* new_DataGen(DG_Data* Data, const char* filenameX, const char* filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp,  int method, int num_threads, int buffer_size) {
+void* new_DataGen(DG_Data* Data, const char* filenameX, const char* filenameY, int dtype, int bs, bool distr_ds, int* dataset_size, int* nbpp,  int method, int num_threads, int buffer_size) {
     
     int check_ds_size = 0;
     size_t memsizeX = 0;
@@ -1142,9 +1284,11 @@ void* new_DataGen(DG_Data* Data, const char* filenameX, const char* filenameY, i
     Data->method=method;
     sprintf(Data->filenameX, "%s", filenameX);
     sprintf(Data->filenameY, "%s", filenameY);
+    
+    Data->datatype=dtype;
    
 
-    printf("[DG] %s. datagen %d filenameX: %s filenameY: %s bs=%d distr_ds=%s method=%d num threads=%d buffer size=%d\n", __func__, Data->dg_id, Data->filenameX, Data->filenameY, bs, (distr_ds==0?"no":"si"), Data->method, Data->num_threads, Data->buffer_size);
+    printf("[DG] %s. datagen %d filenameX: %s filenameY: %s datatype= %d bs=%d distr_ds=%s method=%d num threads=%d buffer size=%d\n", __func__, Data->dg_id, Data->filenameX, Data->filenameY, Data->datatype, bs, (distr_ds==0?"no":"si"), Data->method, Data->num_threads, Data->buffer_size);
 
     if (is_mpi_distributed() == 0) {
         Data->fpX = fopen(Data->filenameX, "r");
@@ -1280,7 +1424,6 @@ void* new_DataGen(DG_Data* Data, const char* filenameX, const char* filenameY, i
     Data->created=true;
     imprime_DG(__func__,Data);
     //imprime_buffer(Data);
-
 
     return NULL;
 }

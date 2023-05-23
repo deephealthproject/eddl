@@ -156,6 +156,7 @@ int init_distributed();
  *  @param method Method to sinchronize
  *  @param batch_avg Nr of batches between parameters sync & average
  *  @param epoch_avg Nr of epochs between changes in batch_avg
+ *  @param overhead (w/LIMIT_OVERHEAD method) Upper bound of comm. overhead. Set batch_avg to bound overhead
  */
 void set_avg_method_distributed(int method, int batch_avg, int epoch_avg=1, float overhead=0.1);
 

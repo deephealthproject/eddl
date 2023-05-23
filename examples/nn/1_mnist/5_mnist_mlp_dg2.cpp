@@ -107,8 +107,10 @@ int main(int argc, char **argv) {
     Tensor* y_test;
 
     if (use_dg == 0) {
-        x_train = Tensor::load("train-images.bi8");
-        y_train = Tensor::load("train-labels.bi8");
+        //x_train = Tensor::load("train-images.bi8");
+        //y_train = Tensor::load("train-labels.bi8");
+        x_train = Tensor::load("cifar_trX.bin");
+        y_train = Tensor::load("cifar_trY.bin");
         x_test = Tensor::load("val-images.bi8");
         y_test = Tensor::load("val-labels.bi8");
         // Preprocessing
@@ -133,11 +135,12 @@ int main(int argc, char **argv) {
     //DG_Data* Val= new DG_Data;
 
     if (use_dg) {
-        new_DataGen(&Train, "train-images.bi8", "train-labels.bi8", batch_size, false, &dataset_size, &num_batches, DG_PERFECT, 1, 4);
+        //new_DataGen(&Train, "train-images.bi8", "train-labels.bi8", DG_BYTE, batch_size, false, &dataset_size, &num_batches, DG_PERFECT, 1, 4);
+        new_DataGen(&Train, "cifar_trX.bin", "cifar_trY.bin", DG_FLOAT, batch_size, false, &dataset_size, &num_batches, DG_PERFECT, 1, 4);
         // imprime_DG(__func__, &Train);
-        new_DataGen(&Val, "val-images.bi8", "val-labels.bi8", batch_size, false, &val_dataset_size, &val_num_batches, DG_PERFECT, 1, 2);
-        new_DataGen(&Val2, "val-images.bi8", "val-labels.bi8", batch_size, false, &val_dataset_size, &val_num_batches, DG_RANDOM, 1, 2);
-        new_DataGen(&Val3, "val-images.bi8", "val-labels.bi8", batch_size, false, &val_dataset_size, &val_num_batches, DG_LIN, 1, 2);
+        new_DataGen(&Val, "val-images.bi8", "val-labels.bi8", DG_BYTE, batch_size, false, &val_dataset_size, &val_num_batches, DG_PERFECT, 1, 2);
+        new_DataGen(&Val2, "val-images.bi8", "val-labels.bi8", DG_BYTE, batch_size, false, &val_dataset_size, &val_num_batches, DG_RANDOM, 1, 2);
+        new_DataGen(&Val3, "val-images.bi8", "val-labels.bi8", DG_BYTE, batch_size, false, &val_dataset_size, &val_num_batches, DG_LIN, 1, 2);
         
     }
     /*

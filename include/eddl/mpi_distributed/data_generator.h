@@ -45,6 +45,9 @@
 #define DG_PERFECT 1
 #define DG_LIN 2
 
+#define DG_BYTE 0
+#define DG_FLOAT 1
+
 
 /**
  *  @brief Initializes data generator
@@ -56,7 +59,7 @@
  *  @param [in] distr_ds        DISTR_DS or NO_DISTR_DS
  *  @param [out] dataset_size   Dataset size
  *  @param [out] nbpp           Nr of batches per proc
- *  @param [in] method          DG_LIN, DG_RANDOM or DG_PERFECT
+ *  @param [in] method          DG_LIN (load items linearly), DG_RANDOM (load items at random) or DG_PERFECT (load items at random, no repetitions)
  *  @param [in] num_threads     Nr of threads to load samples
  *  @param [in] buffer_size     Size of buffer in (local) batches
  */
@@ -116,7 +119,9 @@ struct DG_Data {
     int ds_ptr = 0;
     
     int total_produced=0;
-    int total_consumed=0;
+    int total_consumed = 0;
+
+    int datatype;
     
     FILE* fpX;
     FILE* fpY;
@@ -127,7 +132,7 @@ struct DG_Data {
     FILE* tmp_fp;
     
     char filenameX[128]="";
-    char filenameY[128]="";
+    char filenameY[128] = "";
 };
 
 /**
@@ -136,15 +141,16 @@ struct DG_Data {
  *  @param [in] DG              Pointer to data generator var
  *  @param [in] filenameX       Name of dataset file with samples
  *  @param [in] filenameY       Name of dataset file with labels
+ *  @param [in] datatype        DT_BYTE, DT_FLOAT
  *  @param [in] bs              (global) Batch size
  *  @param [in] distr_ds        DISTR_DS or NO_DISTR_DS
  *  @param [out] dataset_size   Dataset size
  *  @param [out] nbpp           Nr of batches per proc
- *  @param [in] method          DG_LIN, DG_RANDOM or DG_PERFECT
+ *  @param [in] method          DG_LIN (load items linearly), DG_RANDOM (load items at random) or DG_PERFECT (load items at random, no repetitions)
  *  @param [in] num_threads     Nr of threads to load samples
  *  @param [in] buffer_size     Size of buffer in (local) batches
  */
-void* new_DataGen(DG_Data* DG, const char* filenameX, const char* filenameY, int bs, bool distr_ds, int* dataset_size, int* nbpp,  int method, int num_threads, int buffer_size);
+void* new_DataGen(DG_Data* DG, const char* filenameX, const char* filenameY, int dtype, int bs, bool distr_ds, int* dataset_size, int* nbpp, int method, int num_threads, int buffer_size);
 
 /**
  *  @brief Starts data generator

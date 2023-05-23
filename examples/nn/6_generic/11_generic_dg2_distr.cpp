@@ -950,9 +950,9 @@ int main(int argc, char **argv) {
 
             if (use_dg) {
                 int num_batches;
-                new_DataGen(&Train, tr_images, tr_labels, local_batch, use_distr_dataset, &dataset_size, &nbpp, DG_PERFECT, dgt, 8);
-                new_DataGen(&Val, ts_images, ts_labels, local_batch, use_distr_dataset, &val_dataset_size, &val_nbpp, DG_PERFECT, 1, 2);    
-                new_DataGen(&Test, ts_images, ts_labels, local_batch, use_distr_dataset, &test_dataset_size, &test_nbpp, DG_PERFECT, 1, 2);    
+                new_DataGen(&Train, tr_images, tr_labels, DG_BYTE, local_batch, use_distr_dataset, &dataset_size, &nbpp, DG_PERFECT, dgt, 8);
+                new_DataGen(&Val, ts_images, ts_labels, DG_BYTE, local_batch, use_distr_dataset, &val_dataset_size, &val_nbpp, DG_PERFECT, 1, 2);    
+                new_DataGen(&Test, ts_images, ts_labels, DG_BYTE, local_batch, use_distr_dataset, &test_dataset_size, &test_nbpp, DG_PERFECT, 1, 2);    
             } else {
                 nbpp = set_NBPP_distributed(dataset_size, local_batch, use_distr_dataset);
                 val_nbpp = set_NBPP_distributed(val_dataset_size, local_batch, use_distr_dataset);
