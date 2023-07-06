@@ -468,7 +468,7 @@ void * producer_perfect(void* arg) {
             sem_post(&dmutex);
             sem_post(&vaciar);
         }
-        if ((dg_ds_ptr % 10) == 0) {
+        if ((dg_ds_ptr % 1) == 0) {
             fprintf(dg_tmp_fp, "Thread: %d ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d\n", tid, dg_ptr_in, dg_ptr_out, id * dg_nbpp +dg_ds_ptr, (loadsecs * dg_num_threads) / dg_ds_ptr, dg_buffer_count);
             //fflush(dg_tmp_fp);
         }
@@ -1153,30 +1153,29 @@ void* producer_DataGen(void* arg) {
     //   pthread_detach(tid);
 
     //__thread long record;
-   do {
+    fprintf(DG->tmp_fp, "Producer: Init    Thread %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d produced=%d consumed=%d\n", tid, DG->ptr_in, DG->ptr_out, DG->ds_ptr, 0, DG->buffer_count, DG->total_produced, DG->total_consumed);
+    fflush(DG->tmp_fp);
+    while (run_producer) {
         
         sem_wait(&llenar);
         sem_wait(&dmutex);
-        curr_ptr = DG->ptr_in;
-        curr_ds_ptr = DG->ds_ptr;
-        /*
-        DG->ds_ptr++;
-        if (DG->ds_ptr > DG->nbpp)
+        if (DG->ds_ptr < DG->nbpp) {
+			curr_ptr = DG->ptr_in;
+			curr_ds_ptr = DG->ds_ptr;
+			DG->ds_ptr++;
+			DG->ptr_in = (DG->ptr_in+1) % DG->buffer_size;
+		} else 
             run_producer = false;
-         * */
         //if (DEBUG)
         //  fprintf(stdout,"1 %s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
         //  fflush(stdout);
         //fprintf(DG->tmp_fp,"%s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
         //fflush(DG->tmp_fp);
-        /*
-         * DG->ptr_in++;
-        if (DG->ptr_in >= DG->buffer_size) DG->ptr_in = 0;
-         * */
         //     fprintf(stdout,"2 %s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
         //     fflush(stdout);
         sem_post(&dmutex);
         
+        if (run_producer) {
 
         TIME_POINT1(load);
         //       fprintf(stdout,"3 %s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
@@ -1205,28 +1204,22 @@ void* producer_DataGen(void* arg) {
 
         sem_wait(&dmutex);
         DG->total_produced++;
-            DG->buffer_count++;
-            sem_post(&dmutex);
-            sem_post(&vaciar);
-        
+        DG->buffer_count++;
+        sem_post(&dmutex);
+        sem_post(&vaciar);
+        }
         //    fprintf(stdout,"5 %s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
         //   fflush(stdout);
-        
-        sem_wait(&dmutex);
-        DG->ptr_in++;
-        if (DG->ptr_in >= DG->buffer_size) DG->ptr_in = 0;
-        DG->ds_ptr++;
-        if (DG->ds_ptr >= DG->nbpp)
-            run_producer = false;       
-        sem_post(&dmutex);
-        if (((DG->ds_ptr % 10) == 0) || (run_producer==false)) {
-           // sem_wait(&imprimir);
-                fprintf(DG->tmp_fp, "Thread: %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d produced=%d consumed=%d\n", tid, DG->ptr_in, DG->ptr_out, DG->ds_ptr, (loadsecs*DG->num_threads)/DG->ds_ptr, DG->buffer_count, DG->total_produced, DG->total_consumed);
+        if ((DG->ds_ptr % 1) == 0) {
+                fprintf(DG->tmp_fp, "Producer: Running Thread %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d produced=%d consumed=%d\n", tid, DG->ptr_in, DG->ptr_out, DG->ds_ptr, (loadsecs*DG->num_threads)/DG->ds_ptr, DG->buffer_count, DG->total_produced, DG->total_consumed);
                 fflush(DG->tmp_fp);
-            //sem_post(&imprimir);
+        }
+        if (run_producer==false) {
+                fprintf(DG->tmp_fp, "Producer: Exit    Thread %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d produced=%d consumed=%d\n", tid, DG->ptr_in, DG->ptr_out, DG->ds_ptr, 0, DG->total_produced, DG->total_consumed);
+                fflush(DG->tmp_fp);
         }
         //imprime_DG(__func__, DG);
-    }  while (run_producer);
+    } 
  //   printf("%s exit\n", __func__);
    // fprintf(stdout, "6 %s ptr_in %d count= %d\n", __func__, DG->ptr_in, DG->buffer_count);
     //fflush(stdout);
@@ -1589,6 +1582,8 @@ void* get_batch_DataGen(DG_Data* DG, Tensor* in, Tensor* out) {
     DG->buffer_count--;
     sem_post(&dmutex);
     sem_post(&llenar);
+    fprintf(DG->tmp_fp, "getBatch: ptr_in=%d ptr_out=%d ds_ptr=%d buffer_count=%d produced=%d consumed=%d\n", DG->ptr_in, DG->ptr_out, DG->ds_ptr, DG->buffer_count, DG->total_produced, DG->total_consumed);
+    fflush(DG->tmp_fp);
     //imprime_DG(__func__,DG);
     return NULL;
 }
