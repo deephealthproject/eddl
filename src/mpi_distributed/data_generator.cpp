@@ -1136,14 +1136,16 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
     return NULL;
 }
 
-
+// Already defined
+//__thread int curr_ptr = 0;
+//__thread int curr_ds_ptr = 0;
 
 void* producer_DataGen(void* arg) {
     bool run_producer = true;
     pid_t tid = pthread_self();
     double loadsecs=0;
-    int curr_ptr;
-    int curr_ds_ptr;
+    int curr_ptr=0;
+    int curr_ds_ptr=0;
     int id=get_id_distributed();
     DG_Data* DG = (DG_Data*) arg;
 
@@ -1153,7 +1155,7 @@ void* producer_DataGen(void* arg) {
     //   pthread_detach(tid);
 
     //__thread long record;
-    fprintf(DG->tmp_fp, "Producer: Init    Thread %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d produced=%d consumed=%d\n", tid, DG->ptr_in, DG->ptr_out, DG->ds_ptr, 0, DG->buffer_count, DG->total_produced, DG->total_consumed);
+    fprintf(DG->tmp_fp, "Producer: Init    Thread %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d produced=%d consumed=%d\n", tid, DG->ptr_in, DG->ptr_out, DG->ds_ptr, 0.0, DG->buffer_count, DG->total_produced, DG->total_consumed);
     fflush(DG->tmp_fp);
     while (run_producer) {
         
@@ -1215,7 +1217,7 @@ void* producer_DataGen(void* arg) {
                 fflush(DG->tmp_fp);
         }
         if (run_producer==false) {
-                fprintf(DG->tmp_fp, "Producer: Exit    Thread %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d produced=%d consumed=%d\n", tid, DG->ptr_in, DG->ptr_out, DG->ds_ptr, 0, DG->total_produced, DG->total_consumed);
+                fprintf(DG->tmp_fp, "Producer: Exit    Thread %ld ptr_in=%d ptr_out=%d ds_ptr=%d avg load time=%2.4f s. buffer_count=%d produced=%d consumed=%d\n", tid, DG->ptr_in, DG->ptr_out, DG->ds_ptr, 0.0, DG->buffer_count, DG->total_produced, DG->total_consumed);
                 fflush(DG->tmp_fp);
         }
         //imprime_DG(__func__, DG);

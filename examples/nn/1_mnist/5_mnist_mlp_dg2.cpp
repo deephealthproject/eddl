@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
 
     if (use_dg) {
         //new_DataGen(&Train, "train-images.bi8", "train-labels.bi8", DG_BYTE, batch_size, false, &dataset_size, &num_batches, DG_PERFECT, 1, 4);
-        new_DataGen(&Train, "cifar_trX.bin", "cifar_trY.bin", DG_FLOAT, batch_size, false, &dataset_size, &num_batches, DG_PERFECT, 4, 8);
+        new_DataGen(&Train, "cifar_trX.bin", "cifar_trY.bin", DG_FLOAT, batch_size, false, &dataset_size, &num_batches, DG_PERFECT, 8, 16);
         // imprime_DG(__func__, &Train);
         new_DataGen(&Val, "val-images.bi8", "val-labels.bi8", DG_BYTE, batch_size, false, &val_dataset_size, &val_num_batches, DG_PERFECT, 1, 2);
         new_DataGen(&Val2, "val-images.bi8", "val-labels.bi8", DG_BYTE, batch_size, false, &val_dataset_size, &val_num_batches, DG_RANDOM, 1, 2);
