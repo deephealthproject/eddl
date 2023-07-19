@@ -932,11 +932,14 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
     //fprintf(tmp_fp,"%s ds_ptr=%d pos=%ld  \n", __func__, ds_ptr, posX);
     //fflush(tmp_fp);
     if (is_mpi_distributed() == 0) {
+        /*
         err = fseeko(DG->fpX, posX, SEEK_SET);
         if (err) {
             msg("Error fseek ", __func__);
         }
         n_read = fread(bytesX, sizeof (unsigned char), DG->n_sizeX, DG->fpX);
+         */
+        n_read = pread(fileno(DG->fpX), bytesX, DG->n_sizeX*sizeof (unsigned char), posX);
     } else {
 #ifdef cMPI
         MPICHECK(MPI_File_seek(DG->mfpX, posX, MPI_SEEK_SET));
@@ -945,7 +948,8 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
 #endif
     }
 
-    if (n_read != DG->n_sizeX) {
+    // if (n_read != DG->n_sizeX) {
+    if (n_read != DG->n_sizeX*sizeof (unsigned char)) {
         printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeX);
         msg("Error freadX ", __func__);
     }
@@ -971,10 +975,11 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
     //printf("%s pos=%ld \n", __func__, pos);
 
     if (is_mpi_distributed() == 0) {
-        err = fseeko(DG->fpY, posY, SEEK_SET);
+        /* err = fseeko(DG->fpY, posY, SEEK_SET);
         if (err)
             msg("Error fseek ", __func__);
-        n_read = fread(bytesY, sizeof (unsigned char), DG->n_sizeY, DG->fpY);
+        n_read = fread(bytesY, sizeof (unsigned char), DG->n_sizeY, DG->fpY); */
+        n_read = pread(fileno(DG->fpY), bytesY, DG->n_sizeY*sizeof (float), posY);         
     } else {
 #ifdef cMPI
         MPICHECK(MPI_File_seek(DG->mfpY, posY, MPI_SEEK_SET));
@@ -982,7 +987,8 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
         MPICHECK(MPI_Get_count(&status, MPI_BYTE, &n_read));
 #endif
     }
-    if (n_read != DG->n_sizeY) {
+    //if (n_read != DG->n_sizeY) {
+    if (n_read != DG->n_sizeY*sizeof (unsigned char)) {
         printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeY);
         msg("Error freadY ", __func__);
  }
@@ -1060,11 +1066,13 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
     //fprintf(tmp_fp,"%s ds_ptr=%d pos=%ld  \n", __func__, ds_ptr, posX);
     //fflush(tmp_fp);
     if (is_mpi_distributed() == 0) {
+        /*
         err = fseeko(DG->fpX, posX, SEEK_SET);
         if (err) {
             msg("Error fseek ", __func__);
         }
-        n_read = fread(bytesX, sizeof (float), DG->n_sizeX, DG->fpX);
+        n_read = fread(bytesX, sizeof (float), DG->n_sizeX, DG->fpX); */
+        n_read = pread(fileno(DG->fpX), bytesX, DG->n_sizeX*sizeof (float), posX);
     } else {
 #ifdef cMPI
         MPICHECK(MPI_File_seek(DG->mfpX, posX, MPI_SEEK_SET));
@@ -1073,7 +1081,8 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
 #endif
     }
 
-    if (n_read != DG->n_sizeX) {
+    //if (n_read != DG->n_sizeX) {
+    if (n_read != DG->n_sizeX*sizeof (float)) {
         printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeX);
         msg("Error freadX ", __func__);
     }
@@ -1099,10 +1108,11 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
     //printf("%s pos=%ld \n", __func__, pos);
 
     if (is_mpi_distributed() == 0) {
-        err = fseeko(DG->fpY, posY, SEEK_SET);
+        /* err = fseeko(DG->fpY, posY, SEEK_SET);
         if (err)
             msg("Error fseek ", __func__);
-        n_read = fread(bytesY, sizeof (float), DG->n_sizeY, DG->fpY);
+        n_read = fread(bytesY, sizeof (float), DG->n_sizeY, DG->fpY); */
+        n_read = pread(fileno(DG->fpY), bytesY, DG->n_sizeY*sizeof (float), posY);
     } else {
 #ifdef cMPI
         MPICHECK(MPI_File_seek(DG->mfpY, posY, MPI_SEEK_SET));
@@ -1110,10 +1120,11 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
         MPICHECK(MPI_Get_count(&status, MPI_FLOAT, &n_read));
 #endif
     }
-    if (n_read != DG->n_sizeY) {
+    //if (n_read != DG->n_sizeY) {
+    if (n_read != DG->n_sizeY*sizeof (float)) {
         printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeY);
         msg("Error freadY ", __func__);
- }
+  }
 
     if (DEBUG) printf("LOAD:");
     // #pragma omp parallel for private(j,index) 
