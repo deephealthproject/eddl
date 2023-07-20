@@ -940,6 +940,7 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
         n_read = fread(bytesX, sizeof (unsigned char), DG->n_sizeX, DG->fpX);
          */
         n_read = (int) pread(fileno(DG->fpX), bytesX, DG->n_sizeX*sizeof (unsigned char), posX);
+        n_read = n_read/sizeof (unsigned char);
     } else {
 #ifdef cMPI
         MPICHECK(MPI_File_seek(DG->mfpX, posX, MPI_SEEK_SET));
@@ -949,7 +950,7 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
     }
 
     // if (n_read != DG->n_sizeX) {
-    if (n_read != DG->n_sizeX*sizeof (unsigned char)) {
+    if (n_read != DG->n_sizeX) {
         printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeX);
         msg("Error freadX ", __func__);
     }
@@ -980,6 +981,7 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
             msg("Error fseek ", __func__);
         n_read = fread(bytesY, sizeof (unsigned char), DG->n_sizeY, DG->fpY); */
         n_read = (int) pread(fileno(DG->fpY), bytesY, DG->n_sizeY*sizeof (unsigned char), posY);         
+        n_read = n_read/sizeof (unsigned char);
     } else {
 #ifdef cMPI
         MPICHECK(MPI_File_seek(DG->mfpY, posY, MPI_SEEK_SET));
@@ -988,7 +990,7 @@ void* loadXY_DataGen(DG_Data* DG, int buffer_index, int ds_ptr) {
 #endif
     }
     //if (n_read != DG->n_sizeY) {
-    if (n_read != DG->n_sizeY*sizeof (unsigned char)) {
+    if (n_read != DG->n_sizeY) {
         printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeY);
         msg("Error freadY ", __func__);
  }
@@ -1073,6 +1075,7 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
         }
         n_read = fread(bytesX, sizeof (float), DG->n_sizeX, DG->fpX); */
         n_read = (int) pread(fileno(DG->fpX), bytesX, DG->n_sizeX*sizeof (float), posX);
+        n_read = n_read/sizeof (float);
     } else {
 #ifdef cMPI
         MPICHECK(MPI_File_seek(DG->mfpX, posX, MPI_SEEK_SET));
@@ -1082,7 +1085,7 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
     }
 
     //if (n_read != DG->n_sizeX) {
-    if (n_read != DG->n_sizeX*sizeof(float)) {
+    if (n_read != DG->n_sizeX) {
         printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeX);
         msg("Error freadX ", __func__);
     }
@@ -1113,6 +1116,7 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
             msg("Error fseek ", __func__);
         n_read = fread(bytesY, sizeof (float), DG->n_sizeY, DG->fpY); */
         n_read = (int) pread(fileno(DG->fpY), bytesY, DG->n_sizeY*sizeof (float), posY);
+        n_read = n_read/sizeof (float);
     } else {
 #ifdef cMPI
         MPICHECK(MPI_File_seek(DG->mfpY, posY, MPI_SEEK_SET));
@@ -1121,7 +1125,7 @@ void* loadXY_DataGen_float(DG_Data* DG, int buffer_index, int ds_ptr) {
 #endif
     }
     //if (n_read != DG->n_sizeY) {
-    if (n_read != DG->n_sizeY*sizeof (float)) {
+    if (n_read != DG->n_sizeY) {
         printf("%s n_read %d n_size %d\n", __func__, n_read, DG->n_sizeY);
         msg("Error freadY ", __func__);
   }
