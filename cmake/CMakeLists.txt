@@ -74,106 +74,10 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio")
     list(APPEND config_types ${CMAKE_BUILD_TYPE})
 endif()
 
-#############
-##  GTEST  ##
-#############
-message(STATUS "Subproject: GTEST...")
-if(USE_SYSTEM_GTEST)
-    find_package(GTest REQUIRED)
-else()
-    # Download and unpack googletest at configure time
-    foreach(config ${config_types})
-        CONF_PACKAGE(googletest ${config} "")
-        BUILD_PACKAGE(googletest ${config})
-    endforeach()
-
-    # Set variables
-    SET(GTEST_ROOT "${EP_BASE_DIR}/googletest" PARENT_SCOPE)
-    SET(GTEST_INCLUDE_DIRS "${EP_BASE_DIR}/googletest/include" PARENT_SCOPE)
-endif()
-message(STATUS "Subproject: GTEST...DONE")
-
-
-##############
-###  EIGEN  ##
-##############
-message(STATUS "Subproject: EIGEN...")
-if(USE_SYSTEM_EIGEN)
-    find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-else()
-    CONF_PACKAGE(eigen ${CMAKE_BUILD_TYPE} @ONLY)
-    BUILD_PACKAGE(eigen ${CMAKE_BUILD_TYPE})
-
-    # Set variables
-    SET(Eigen3_DIR "${EP_BASE_DIR}/eigen/share/eigen3/cmake" PARENT_SCOPE)
-endif()
-message(STATUS "Subproject: EIGEN...DONE")
-
-
-################
-##  PROTOBUF  ##
-################
-if(USE_SYSTEM_PROTOBUF)
-    find_package(Protobuf REQUIRED)
-else()
-    # Download and unpack protobuf at configure time
-    foreach(config ${config_types})
-        CONF_PACKAGE(protobuf ${config} @ONLY)
-        BUILD_PACKAGE(protobuf ${config})
-    endforeach()
-
-    set(Protobuf_ROOT "${EP_BASE_DIR}/protobuf" PARENT_SCOPE)
-    set(Protobuf_INCLUDE_DIRS "${EP_BASE_DIR}/protobuf/include" PARENT_SCOPE)
-    set(Protobuf_PROTOC_EXECUTABLE "${EP_BASE_DIR}/protobuf/bin/protoc" PARENT_SCOPE)
-    set(Protobuf_USE_STATIC_LIBS ON PARENT_SCOPE) # Always static when superbuild is enabled
-endif()
 add_custom_target(protobuf_files
 	protoc --cpp_out=../src/serialization/onnx ../src/serialization/onnx/onnx.proto
 	)
-message(STATUS "Subproject: Protobuf...DONE")
 
-
-# Only for distributed versions
-if(BUILD_DIST)
-
-    ############
-    ##  ZLIB  ##
-    ############
-    message(STATUS "Subproject: ZLIB...")
-    if(USE_SYSTEM_ZLIB)
-        find_package(ZLIB REQUIRED)
-    else()
-        # Download and unpack ZLIB at configure time
-        foreach(config ${config_types})
-            CONF_PACKAGE(zlib ${config} "")
-            BUILD_PACKAGE(zlib ${config})
-        endforeach()
-        # Set variables
-        SET(ZLIB_ROOT "${EP_BASE_DIR}/zlib" PARENT_SCOPE)
-        SET(ZLIB_INCLUDE_DIRS "${EP_BASE_DIR}/zlib/include" PARENT_SCOPE)
-    endif()
-    message(STATUS "Subproject: ZLIB...DONE")
-
-
-    ###############
-    ##  OPENSSL  ##
-    ###############
-    message(STATUS "Subproject: OpenSSL...")
-    if(USE_SYSTEM_OPENSSL)
-        find_package(OpenSSL REQUIRED)
-    else()
-        # Download and unpack ZLIB at configure time
-        foreach(config ${config_types})
-            CONF_PACKAGE(openssl ${config} "")
-            BUILD_PACKAGE(openssl ${config})
-        endforeach()
-        # Set variables
-        SET(OPENSSL_ROOT_DIR "${EP_BASE_DIR}/openssl" PARENT_SCOPE)
-        SET(OPENSSL_INCLUDE_DIR "${EP_BASE_DIR}/openssl/include" PARENT_SCOPE)
-    endif()
-    message(STATUS "Subproject: OpenSSL...DONE")
-
-endif()
 
 ##################
 ##  PTHREADS4W  ##

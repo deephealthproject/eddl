@@ -16,7 +16,7 @@ SET(USE_RISCV OFF)
 SET(USE_CUDA OFF)
 SET(USE_CUDNN OFF)
 SET(USE_FPGA OFF)
-SET(USE_PROTOBUF OFF)
+SET(USE_PROTOBUF ON)
 
 # Device specific setup
 string(TOUPPER ${BUILD_TARGET} BUILD_TARGET)  # Detect cpu, Cpu, CPU,...
@@ -59,10 +59,6 @@ file(GLOB_RECURSE PUBLIC_HEADERS "${PROJECT_SOURCE_DIR}/include/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_HEADERS "${PROJECT_SOURCE_DIR}/src/*" *.{h, hpp})
 file(GLOB_RECURSE CPP_SOURCES "${PROJECT_SOURCE_DIR}/src/*" *.{cc, cpp})
 
-# Remove dependent files of protobuf
-list(FILTER PUBLIC_HEADERS EXCLUDE REGEX ".*/include/eddl/serialization/onnx/onnx.pb*")
-list(FILTER CPP_HEADERS EXCLUDE REGEX ".*/src/serialization/onnx/onnx_third_party/onnx.pb*")
-list(FILTER CPP_SOURCES EXCLUDE REGEX ".*/src/serialization/onnx/onnx_third_party/onnx.pb*")
 
 # Remove problematic files if they are not needed
 if(NOT BUILD_DIST)
@@ -99,7 +95,6 @@ ENDFOREACH(item)
 
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(${PROJECT_NAME} ${ALL_FILES})
-
 # We need this directory, and users of our library will need it too
 target_include_directories(${PROJECT_NAME}
         PUBLIC
@@ -139,60 +134,26 @@ endif()
 ########################### LINK LIBRARIES ################################
 ###########################################################################
 
-# Eigen ***************************************
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)  # EIGEN_DIR => ok
-target_include_directories(${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)  # Header only library
+# PROTOBUF ***************************************
+# Find libraries (need absolute paths)
+find_library(Protobuf_LIBRARY NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd libprotobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
+find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
 
-# Protobuf ***************************************
-if(BUILD_PROTOBUF)
+# Add extra files
+target_sources(${PROJECT_NAME} PRIVATE ${ONNX_FILES})
 
-    # Link library
-    if(Protobuf_ROOT)
-        # Find libraries (need absolute paths)
-        find_library(Protobuf_LIBRARY NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-        find_library(Protobuf_LIBRARY_DEBUG NAMES protobufd libprotobufd HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-        find_library(Protobuf_LIBRARY_RELEASE NAMES protobuf libprotobuf HINTS ${Protobuf_ROOT} PATHS ${Protobuf_ROOT} PATH_SUFFIXES "lib" "lib64")
-    else()
-        find_package(Protobuf)  # Problems with: Protobuf_ROOT
-    endif()
+# Add includes
+target_include_directories(${PROJECT_NAME} PRIVATE ${Protobuf_INCLUDE_DIRS})
 
-    # Check if Protobuf was really found
-    if(Protobuf_LIBRARY OR Protobuf_FOUND)
-        # Add extra files
-        target_sources(${PROJECT_NAME} PRIVATE ${ONNX_FILES})
+# Add libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE ${Protobuf_LIBRARY})
 
-        # Add includes
-        target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${Protobuf_INCLUDE_DIRS}>)
+SET(USE_PROTOBUF ON)
 
-        if(MSVC AND NOT Protobuf_USE_STATIC_LIBS)
-            # libprotobuf as shared lib requires PROTOBUF_USE_DLLS definition for MSVC :(
-            # Because of https://github.com/protocolbuffers/protobuf/issues/2502#issuecomment-412868718
-            # libprotobuf conda package is dynamically linked
-            target_compile_definitions(${PROJECT_NAME} PUBLIC PROTOBUF_USE_DLLS)
-        endif()
-
-        # Add libraries
-        if(MSVC)
-            target_link_libraries(${PROJECT_NAME} PUBLIC optimized ${Protobuf_LIBRARY} debug ${Protobuf_LIBRARY_DEBUG})
-        else()
-            target_link_libraries(${PROJECT_NAME} PUBLIC ${Protobuf_LIBRARY})
-        endif()
-
-        # Create "onnx.pb.cc" and "onnx.pb.h" files (from serialization/onnx)
-        # Equivalent to: /usr/local/bin/protoc --cpp_out . onnx.proto
-        #if(OVERWRITE_PROTO_FILES)
-        #    EXEC_PROGRAM(${Protobuf_PROTOC_EXECUTABLE} ARGS --cpp_out ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ --proto_path ${PROJECT_SOURCE_DIR}/src/serialization/onnx/ onnx.proto )
-        #endif()
-        SET(USE_PROTOBUF ON)
-    else()
-        message(WARNING "[WARNING] Protobuf was requested but it has not been found (Falling back to: '-D BUILD_PROTOBUF=OFF')
-        Hint: Use '-D BUILD_SUPERBUILD=ON', or try with a different protobuf installation to fix this problem.")
-        SET(USE_PROTOBUF OFF)
-    endif()
-endif()
-SET(USE_PROTOBUF ${USE_PROTOBUF} PARENT_SCOPE)  # Parent's scope
-
+# EIGEN ***************************************
+# Add includes
+target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR})
 
 # OpenMP ***************************************
 if(BUILD_OPENMP)
