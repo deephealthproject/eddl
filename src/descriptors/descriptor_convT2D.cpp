@@ -79,7 +79,8 @@ void ConvolDescriptorT2D::build(Tensor *A) {
 
     I = A;
     
-    nk = A->shape[1]; //ksize[0];
+    //nk = A->shape[1]; 
+    nk = ksize[0];
     kr = ksize[1];
     kc = ksize[2];
     kz = A->shape[1]/groups;
@@ -213,7 +214,7 @@ void ConvolDescriptorT2D::build(Tensor *A) {
                  in,iz,ir,ic);
    cudnnCreateFilterDescriptor(&wDesc);
    //CONVT we need to swap input channels with output so all other swappings (forward and backward functions) matches
-   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, nk, kz, kr, kc);
+   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, kz, nz, kr, kc);
 
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);

@@ -87,7 +87,8 @@ Layer* build_convT_layer(onnx::NodeProto *node,
   string weights_name = node->input(1); // Get weights and dims
   vector<float> *weights = &(map_init_values[weights_name]);
   vector<int> dims = map_init_dims[weights_name];
-  filters = dims[0];
+  //filters = dims[0];
+  filters = dims[1];
 
   // Deduce conv dimension from layer input
   if (parent_shape.size() == 3)
