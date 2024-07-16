@@ -214,7 +214,7 @@ void ConvolDescriptorT2D::build(Tensor *A) {
                  in,iz,ir,ic);
    cudnnCreateFilterDescriptor(&wDesc);
    //CONVT we need to swap input channels with output so all other swappings (forward and backward functions) matches
-   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, kz, nz, kr, kc);
+   cudnnSetFilter4dDescriptor(wDesc, data_type, tensor_format, kz, nk, kr, kc);
 
    cudnnCreateTensorDescriptor(&yDesc);
    cudnnSetTensor4dDescriptor(yDesc, tensor_format, data_type, in, z,r,c);
