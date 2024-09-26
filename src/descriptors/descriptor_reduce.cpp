@@ -11,6 +11,7 @@
 #include "eddl/descriptors/tensor_descriptors.h"
 #include "eddl/utils.h"
 #include <algorithm>
+#include <stdexcept>
 
 
 ReduceDescriptor2::ReduceDescriptor2(const vector<int>& axis, bool keepdims, int dev) : TensorDescriptor(dev) {
