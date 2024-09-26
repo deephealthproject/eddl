@@ -59,12 +59,7 @@ find_dependency(Eigen3 REQUIRED NO_MODULE)
 
 # Protobuf
 if(USE_PROTOBUF)
-    if(USE_SUPERBUILD AND NOT USE_SYSTEM_PROTOBUF)
-        SET(Protobuf_ROOT @Protobuf_ROOT@) # Modified in a subdirectory
-        find_dependency(Protobuf CONFIG REQUIRED HINTS ${Protobuf_ROOT})
-    else()
-        find_dependency(Protobuf REQUIRED)
-    endif()
+    find_dependency(Protobuf REQUIRED)
 endif()
 
 if(USE_DIST)
