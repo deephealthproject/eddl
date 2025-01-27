@@ -55,8 +55,34 @@ LMult::LMult(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(n
     addparent(l);
 }
 
+/**
+  @brief Computes the sum operation between a layer and a float
+
+  @param l a Layer.
+  @param t a Tensor.
+  @param name a name for the operation (predefined as 'sum+TotaLMultLayers')
+  @param dev which computing service utilize
+
+  @returns the result of l+k element-wise over l
+  */
+LMult::LMult(Layer *l, Tensor *t, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
+    if(name.empty()) this->name = "mult_" + to_string(++total_layers);
+    in_tensor = 1;
+    val_tensor = t;
+    val_tensor->toDevice(dev);
+
+    input=l->output;
+    output = new Tensor(l->output->shape, dev);
+
+    l->addchild(this);
+    addparent(l);
+}
+
 void LMult::forward() {
     if (binary) Tensor::el_mult(parent[0]->output, parent[1]->output, output, 0);
+    else if (in_tensor) {
+        Tensor::el_mult(parent[0]->output, val_tensor, output, 0);
+    }    
     else {
         Tensor::mult(parent[0]->output, output, val);
     }
@@ -66,6 +92,10 @@ void LMult::backward() {
     if (binary) {
         Tensor::el_mult(delta,parent[0]->output,parent[1]->delta,1);
         Tensor::el_mult(delta,parent[1]->output,parent[0]->delta,1);
+    }
+    else if (in_tensor) {
+        delta->mult_(input);
+        Tensor::inc(delta,parent[0]->delta);
     }
     else {
         delta->mult_(val);
@@ -79,8 +109,10 @@ Layer *LMult::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LMult::clone(int c, int bs, vector<Layer *> p, int todev) {
     LMult *n;
-    if (binary)
+    if (binary) 
         n = new LMult(p[0], p[1],  name, todev, this->mem_level);
+    else if (in_tensor)
+        n = new LMult(p[0], val_tensor,  name, todev, this->mem_level);
     else
         n = new LMult(p[0], val,  name, todev, this->mem_level);
     n->orig = this;

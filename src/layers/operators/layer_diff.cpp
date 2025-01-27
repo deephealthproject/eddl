@@ -33,7 +33,6 @@ int LDiff::total_layers = 0;
 LDiff::LDiff(Layer *l1, Layer *l2, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "diff_" + to_string(++total_layers);
     binary=1;
-
     input=l1->output;
     tin.push_back(l1->output);
     tin.push_back(l2->output);
@@ -71,16 +70,41 @@ LDiff::LDiff(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(n
     addparent(l);
 }
 
+/**
+  @brief Computes the subtraction operation between a constant Tensor and a Layer
+
+  @param t a Tensor.
+  @param l a Layer.
+  @param name a name for the operation (predefined as 'diff+TotalDiffLayers')
+  @param dev which computing service utilize
+
+  @returns the result of t-l element-wise over l
+
+  */
+LDiff::LDiff(Tensor *t, Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
+  std::cout << "Nuevo Constructor LDiff" << std::endl;
+  if(name.empty()) this->name = "diff_" + to_string(++total_layers);
+  binary=1;
+  input= l->output;
+  val_tensor = t;
+  val_tensor->toDevice(dev);
+
+  tin.push_back(val_tensor);
+  tin.push_back(l->output);
+
+  output = new Tensor(l->output->shape, dev);
+
+  l->addchild(this);
+  addparent(l);
+}
+
 LDiff::LDiff(float k, Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
     if(name.empty()) this->name = "diff" + to_string(++total_layers);
     val=k;
     left=0;
 
     input=l->output;
-
-
     output = new Tensor(l->output->shape, dev);
-
 
     l->addchild(this);
     addparent(l);
@@ -138,14 +162,20 @@ Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
 
 Layer *LDiff::clone(int c, int bs, vector<Layer *> p, int todev) {
     LDiff *n;
-    if (binary)
-        n = new LDiff(p[0], p[1], "clone_" + to_string(c) + name, todev, this->mem_level);
-        else {
-          if (left)
-            n = new LDiff(p[0], val, "clone_" + to_string(c) + name, todev, this->mem_level);
-          else
-            n = new LDiff(val, p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
+    if (binary) {
+        if (p.size() == 1) {
+          n = new LDiff(val_tensor, p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
         }
+        else {
+          n = new LDiff(p[0], p[1], "clone_" + to_string(c) + name, todev, this->mem_level);
+        }
+    }
+    else {
+      if (left)
+        n = new LDiff(p[0], val, "clone_" + to_string(c) + name, todev, this->mem_level);
+      else
+        n = new LDiff(val, p[0], "clone_" + to_string(c) + name, todev, this->mem_level);
+    }
     n->orig = this;
     return n;
 }

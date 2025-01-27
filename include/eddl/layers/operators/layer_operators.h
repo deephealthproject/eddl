@@ -30,7 +30,9 @@ class OperatorLayer : public Layer {
 public:
 
     int binary;
+    int in_tensor;
     float val;
+    Tensor *val_tensor;
 
     OperatorLayer(string name, int dev, int mem);
 
@@ -71,6 +73,7 @@ public:
     int left;
     vector<Tensor *> tin;
 
+	LDiff(Tensor *t, Layer *l, string name, int dev, int mem);
     LDiff(Layer *l1, Layer *l2, string name, int dev, int mem);
     LDiff(Layer *l, float k, string name, int dev, int mem);
     LDiff(float k, Layer *l, string name, int dev, int mem);
@@ -212,6 +215,7 @@ class LMult : public OperatorLayer {
 public:
     static int total_layers;
 
+    LMult(Layer *l, Tensor *t, string name, int dev, int mem);
     LMult(Layer *l1, Layer *l2, string name, int dev, int mem);
     LMult(Layer *l, float k, string name, int dev, int mem);
 

@@ -11,15 +11,62 @@ Layer* build_mul_layer(onnx::NodeProto *node,
                        int dev,
                        int mem)
 {
+  vector<float> second_operator_scalars;
   string first_operator_name = node->input(0);
-  Layer *first_operator = output_node_map[first_operator_name];
-
   string second_operator_name = node->input(1);
+  Layer *first_operator = output_node_map[first_operator_name];
+  Layer *second_operator = output_node_map[second_operator_name];
+
+
   if(map_init_values.count(second_operator_name))
   {
+    second_operator_scalars = map_init_values[second_operator_name];
+    if (second_operator_scalars.size() > 1) {
+      std::cout << "Segundo operador constante" << std::endl;
+
+      // vector<int> shape_second_op = second_operator->getShape();
+      vector<int> shape_first_op  = first_operator->getShape();
+      vector<int> shape_second_op = map_init_dims[second_operator_name];
+      
+      Tensor *aux_first  = Tensor::zeros(shape_first_op);
+      Tensor *aux_second = new Tensor(second_operator_scalars, shape_second_op);
+      Tensor *constant;
+
+      int first_op_ndim  = aux_first->ndim;
+      int second_op_ndim = aux_second->ndim;
+
+      // Assume the second operand as the one to be broadcasted
+      if (second_op_ndim + 1 == first_op_ndim) {
+        aux_second = aux_second->unsqueeze();
+
+        // Find which is the different dimension
+        int dim = -1;
+        for (size_t i = 1; i < shape_first_op.size(); ++i) {
+          if (shape_first_op[i] != shape_second_op[i]) {
+            dim = i;
+            std::cout << "La dimensión diferente es la " << i << std::endl;
+            break;
+          }
+        }
+        if (dim < 0) 
+          msg("Error: Could not find the different dim of the Mult layer " + node->name() + " operands", "ONNX:ImportNet");
+        int times = shape_first_op[dim];
+        constant = Tensor::repeat(aux_second, times, dim);
+      }
+      else if (second_op_ndim == first_op_ndim) {
+        constant = new Tensor(second_operator_scalars, shape_first_op);
+      }
+      else {
+        msg("Error: The second input operand of the Mult layer " + node->name() + " is not valid", "ONNX::ImportNet");
+      }
+
+      delete(aux_first);
+      delete(aux_second);
+      return new LMult(first_operator, constant, node->name(), dev, mem);
+    }
     // Detect pattern for applying scale and bias of batchnorm using Mult
     // and Add operators
-    if (LBatchNorm *l = dynamic_cast<LBatchNorm*>(first_operator))
+    else if (LBatchNorm *l = dynamic_cast<LBatchNorm*>(first_operator))
     {
       // Set the scale value of the input batchnorm layer
       vector<float> *scale_weights = &(map_init_values[second_operator_name]);
@@ -47,8 +94,6 @@ Layer* build_mul_layer(onnx::NodeProto *node,
       }
     }
   }
-
-  Layer *second_operator = output_node_map[second_operator_name];
 
   vector<Layer *> operators = expand_broadcast({first_operator, second_operator});
 
