@@ -27,12 +27,32 @@ Layer* build_maxpool_layer(onnx::NodeProto *node,
     { // We dont know if it is implemented
       if (!attribute.s().compare("NOTSET"))
         continue;
-      // if(!attribute.s().compare("VALID")) explicit_padding=false;
+
+      // ================== INICIO TEST ================== 
+      /** Esto es un parche para modelos que tienen capas con
+       * dimensiones impares antes y después de hacer el MaxPool.
+       * De las formas probadas, hacer que falle por un padding
+       * asimétrico para ir al catch era la opción que funcionó.
+       */
+      if (!attribute.s().compare("SAME_UPPER")) {
+        string name = node->name();
+        string parent_name = node->input(0); // Get parent
+        Layer *parent = output_node_map[parent_name];
+        vector<int> parent_shape = parent->output->shape;
+
+        if (parent_shape[2] % 2 == 1) {
+          onnx::AttributeProto* aux_attribute = node->mutable_attribute(j);
+          pads.push_back(1);
+          pads.push_back(0);
+          pads.push_back(1);
+          pads.push_back(0);
+          attribute = node->attribute(j);
+        }
+      }
+      // =================== FIN TEST =================== 
+
+      if(!attribute.s().compare("VALID")) explicit_padding=false;
     }
-    //else if (!attr_name.compare("ceil_mode")) {
-    //}
-    //else if (!attr_name.compare("dilations")) {
-    //}
     else if (!attr_name.compare("kernel_shape"))
     {
       for (int h = 0; h < attribute.ints_size(); h++)
