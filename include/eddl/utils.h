@@ -110,7 +110,7 @@ template<typename T>
 string printVector(vector<T> myvector){
     string temp = "";
     for(int i = 0; i<myvector.size()-1; i++){
-        temp += to_string(myvector[i]) + ", ";
+        temp += to_string(myvector[i]) + ",";
     }
     temp += to_string(myvector[myvector.size()-1]);
     return temp;

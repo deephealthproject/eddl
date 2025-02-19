@@ -171,3 +171,11 @@ string LReshape::plot(int c) {
 
     return s;
 }
+
+string LReshape::describe() {
+    string s;
+
+    s = "Reshape " + parent[0]->name + " " + printVector(ls) + " " + name;
+
+    return s;
+}

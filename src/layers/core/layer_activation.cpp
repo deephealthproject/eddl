@@ -373,3 +373,17 @@ string LActivation::plot(int c){
 
     return s;
 }
+
+string LActivation::describe(){
+    string s;
+
+    if(this->act == "leaky_relu"){
+        s = "LeakyRelu " + parent[0]->name + " " + name;
+    } else if(this->act == "softmax"){
+        s = "Softmax " + parent[0]->name + " " + to_string(this->params[0]) + " " + name;
+    } else if(this->act == "sigmoid"){
+        s = "Sigmoid " + parent[0]->name + " " + name;
+    }
+    
+    return s;
+}

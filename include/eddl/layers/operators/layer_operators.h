@@ -84,6 +84,8 @@ public:
 
     void backward() override;
 
+    string describe() override;
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -102,6 +104,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    string describe() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
@@ -223,6 +227,8 @@ public:
 
     void backward() override;
 
+    string describe();
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -272,6 +278,8 @@ public:
     void forward() override;
 
     void backward() override;
+
+    string describe() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

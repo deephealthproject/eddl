@@ -40,6 +40,8 @@ public:
 
     string plot(int c) override;
 
+    string describe() override;
+
 };
 
 /// Subtract Layer
@@ -164,6 +166,8 @@ public:
     void backward() override;
 
     string plot(int c) override;
+
+    string describe() override;
 
 };
 

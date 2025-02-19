@@ -115,6 +115,7 @@ public:
     virtual int get_trainable_params_count();
     virtual void zeroGrads();
     virtual string plot(int c) { return ""; }
+    virtual string describe() { return ""; }
 
     virtual void addchild(Layer *l) {}
 
@@ -157,6 +158,8 @@ public:
 
     string plot(int c) override { return ""; }
 
+    string describe() override { return ""; }
+
     void forward() override {}
 
     void backward() override {}
@@ -192,6 +195,8 @@ public:
     //virtual
 
     string plot(int c) override { return ""; }
+
+    string describe() override { return ""; }
 
     void forward() override {}
 

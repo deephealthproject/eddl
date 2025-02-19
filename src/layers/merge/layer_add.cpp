@@ -57,6 +57,19 @@ string LAdd::plot(int c) {
     return s;
 }
 
+string LAdd::describe() {
+    string s;
+
+    s = "MergeAdd {";
+    for (int i = 0; i < parent.size(); ++i) {
+        if(i>0){s = s + ',';}
+        s = s + parent[i]->name;
+    }
+    s = s + "} " + name; 
+
+    return s;
+}
+
 void LAdd::forward() {
     output->fill_(0.0);
     for (int i = 0; i < parent.size(); ++i)

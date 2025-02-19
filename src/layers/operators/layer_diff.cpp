@@ -146,6 +146,23 @@ void LDiff::backward(){
 
 }
 
+string LDiff::describe() {
+    string s;
+
+    if(parent.size() > 1){
+        s = "Sub " + to_string(1) + " " + parent[0]->name + " "  + parent[1]->name + " " + name;
+    } else if(binary){
+        s = "Sub " + to_string(2) + " " + name + ".bin" + " " + parent[0]->name + " " + name;
+        val_tensor->save(name + ".bin");
+    } else if(left) {
+        s = "Sub " + to_string(3) + " " + parent[0]->name + " " + name;
+    } else {
+        s = "Sub " + to_string(4) + " " + parent[0]->name + " " + name;
+    }
+
+    return s;
+}
+
 Layer *LDiff::share(int c, int bs, vector<Layer *> p) {
   LDiff *n;
   if (binary)

@@ -118,6 +118,20 @@ void LDiv::backward() {
     }
 }
 
+string LDiv::describe() {
+    string s;
+
+    if(parent.size() > 1){
+        s = "Div " + to_string(1) + " " + parent[0]->name + " "  + parent[1]->name + " " + name;
+    } else if(left) {
+        s = "Div " + to_string(2) + " " + parent[0]->name + " " + to_string(val) + " " + name;
+    } else {
+        s = "Div " + to_string(3) + " " + to_string(val) + " " + parent[0]->name + " " + name;
+    }
+
+    return s;
+}
+
 Layer *LDiv::share(int c, int bs, vector<Layer *> p) {
   LDiv *n;
   if (binary)

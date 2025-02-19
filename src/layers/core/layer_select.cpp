@@ -59,6 +59,23 @@ void LSelect::backward(){
 }
 
 
+string LSelect::describe() {
+    string s;
+
+    // LSelect(parent, sel_rngs, lname, DEV_CPU, 0)
+
+    string str_indices = "";
+    for(int i = 0; i<sd->indices.size()-1; i++){
+        str_indices += sd->indices[i] + ",";
+    }
+    str_indices += sd->indices[sd->indices.size()-1];
+
+    s = "LSelect " + parent[0]->name + " " + str_indices + " " + name + " " + to_string(sd->device) + " " + to_string(0);
+
+    return s;
+}
+
+
 Layer *LSelect::share(int c, int bs, vector<Layer *> p) {
     return clone(c,bs,p,dev);
 }

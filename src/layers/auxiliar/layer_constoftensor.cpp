@@ -74,3 +74,12 @@ string LConstOfTensor::plot(int c) {
 
     return s;
 }
+
+string LConstOfTensor::describe() {
+    string s;
+
+    s = "ConstOfTensor " + name + ".bin" + " " + name;
+    this->const_tensor->save(name + ".bin");
+
+    return s;
+}

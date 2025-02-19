@@ -103,6 +103,24 @@ void LMult::backward() {
     }
 }
 
+string LMult::describe() {
+    string s;
+
+    //if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
+    //else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+
+    if(parent.size() > 1){
+        s = "LMult " + to_string(1) + " " + parent[0]->name + " "  + parent[1]->name + " " + name;
+    } else if(in_tensor){
+        s = "LMult " + to_string(2) + " " + parent[0]->name + " " + name + ".bin" + " " + name;
+        val_tensor->save(name + ".bin");
+    } else {
+        s = "LMult " + to_string(3) + " " + parent[0]->name + " " + to_string(this->val) + " " + name;
+    }
+
+    return s;
+}
+
 Layer *LMult::share(int c, int bs, vector<Layer *> p) {
   return clone(c,bs,p,dev);
 }

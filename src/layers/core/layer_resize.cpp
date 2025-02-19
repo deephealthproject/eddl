@@ -74,3 +74,12 @@ string LResize::plot(int c) {
 
     return s;
 }
+
+string LResize::describe() {
+    string s;
+
+    s = "Resize " + parent[0]->name + " " + printVector(this->new_shape) + " " + to_string(this->reshape) + " " + to_string(this->da_mode) \
+    + " " + to_string(this->cval) + " " + to_string(this->coordinate_transformation_mode) + " " + name;
+
+    return s;
+}

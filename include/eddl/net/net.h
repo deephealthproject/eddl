@@ -135,6 +135,7 @@ public:
 
     string summary(bool print_stdout=true);
     void plot(const string& fname="model.pdf", const string& rankdir="LR");
+    void describe(const string& fname="model_topology.txt");
 
     void setmode(int m);
 

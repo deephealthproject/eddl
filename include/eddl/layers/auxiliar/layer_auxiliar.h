@@ -108,6 +108,8 @@ public:
     void backward() override;
 
     string plot(int c) override;
+
+    string describe() override;
 };
 
 /// Gather Layer

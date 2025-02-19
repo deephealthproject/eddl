@@ -386,6 +386,32 @@ void Net::plot(const string& fname, const string& rankdir) {
     }
 }
 
+void Net::describe(const string& fname) {
+    ofstream out(fname);  // temp file
+
+    int ind;
+    string type = fname.substr(fname.find('.') + 1);  // extension
+    string cmd;
+
+    // Input Layers
+    for(int i = 0; i != lin.size(); i++){
+        out << lin[i]->describe() << " input" << std::endl;
+    }
+
+    // Main layers
+    for(int i = 0; i != layers.size(); i++){
+        if ((!isIn(layers[i], lin, ind)) && (!isIn(layers[i], lout, ind)))
+            out << layers[i]->describe()  << " main" << std::endl;
+    }
+
+    // Output Layers
+    for(int i = 0; i != lout.size(); i++){
+        out << lout[i]->describe() << " output" << std::endl;
+    }
+
+    out.close();
+}
+
 /////////////////////////////////////////
 void Net::setlogfile(const string& fname)
 {

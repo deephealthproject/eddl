@@ -96,6 +96,8 @@ public:
 
     string plot(int c) override;
 
+    string describe() override;
+
 };
 
 /// MaxPool1D Layer

@@ -129,3 +129,16 @@ string LConcat::plot(int c) {
 
     return s;
 }
+
+string LConcat::describe() {
+    string s;
+
+    s = "Concat {";
+    for (int i = 0; i < parent.size(); ++i) {
+        if(i>0){s = s + ',';}
+        s = s + parent[i]->name;
+    }
+    s = s + "} " + to_string(this->axis) + " " + name; 
+
+    return s;
+}

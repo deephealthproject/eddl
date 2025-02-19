@@ -213,6 +213,14 @@ string LDense::plot(int c) {
     return s;
 }
 
+string LDense::describe() {
+    string s;
+
+    s = "Dense " + parent[0]->name + " " + to_string(this->ndim) + " " + name;
+
+    return s;
+}
+
 void LDense::reset_name_counter(){
     total_layers=0;
 }

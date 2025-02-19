@@ -68,6 +68,14 @@ void LPermute::backward(){
     tensorNN::select_back(this->delta, this->parent[0]->delta, sd);
 }
 
+string LPermute::describe() {
+    string s;
+
+    s = "Permute " + parent[0]->name + " " + printVector(sd->dims) + " " + name;
+
+    return s;
+}
+
 Layer *LPermute::share(int c, int bs, vector<Layer *> p) {
     return clone(c,bs,p,dev);
 }

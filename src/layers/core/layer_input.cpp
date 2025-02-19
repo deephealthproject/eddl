@@ -42,6 +42,14 @@ string LInput::plot(int c) {
     return s;
 }
 
+string LInput::describe() {
+    string s;
+ 
+    s = "Input {" + printVector<int>(this->input->shape) + "} " + name;
+
+    return s;
+}
+
 void LInput::free_delta(){
 
   // DO NOT DELETE DELTA

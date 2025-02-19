@@ -226,6 +226,16 @@ string LConv::plot(int c) {
     return s;
 }
 
+string LConv::describe() {
+    string s;
+
+    s = "LConv " + parent[0]->name + " " + to_string(cd->filters) + " " + printVector<int>(cd->kernel_size) + " " \
+    + printVector<int>(cd->strides) + " " + cd->padding + " " + printVector<int>(cd->pads) + " " + to_string(cd->groups) + " " \ 
+    + printVector<int>(cd->dilation_rate) + " " + to_string(cd->use_bias) + " " + name + " " + to_string(dev) + " " + to_string(0);
+
+    return s;
+}
+
 void LConv::reset_name_counter() {
     total_layers = 0;
 }

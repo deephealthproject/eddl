@@ -77,6 +77,8 @@ public:
 
     string plot(int c) override;
 
+    string describe() override;
+
 };
 
 /// EMBEDDING Layer
@@ -162,6 +164,8 @@ public:
 
     string plot(int c) override;
 
+    string describe() override;
+
 	static void reset_name_counter();
 
 	void enable_distributed() override;
@@ -212,6 +216,8 @@ public:
 
     string plot(int c) override;
 
+    string describe() override;
+
 };
 
 /// Reshape Layer
@@ -239,6 +245,8 @@ public:
     void resize(int batch) override;
 
     string plot(int c) override;
+
+    string describe() override;
 
 };
 
@@ -383,6 +391,8 @@ public:
     void backward() override;
 
     string plot(int c) override;
+
+    string describe() override;
 };
 
 /// Squeeze Layer
@@ -485,6 +495,8 @@ public:
 
     void resize(int b) override;
 
+    string describe() override;
+
     Layer *share(int c, int bs, vector<Layer *> p) override;
 
     Layer *clone(int c, int bs, vector<Layer *> p, int todev) override;
@@ -507,6 +519,8 @@ public:
     void backward() override;
 
     void resize(int b) override;
+
+    string describe() override;
 
     Layer *share(int c, int bs, vector<Layer *> p) override;
 

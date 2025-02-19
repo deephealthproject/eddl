@@ -84,6 +84,21 @@ void LSum::backward() {
       }
 }
 
+string LSum::describe() {
+    string s;
+
+    //if (c) s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=gray,shape=box]";
+    //else s = name + " [label=" + "\"" + name + "\",style=filled,fontsize=12,fillcolor=White,shape=box]";
+
+    if(parent.size() > 1){
+        s = "Add " + to_string(1) + " " + parent[0]->name + " "  + parent[1]->name + " " + name;
+    } else {
+        s = "Add " + to_string(2) + " " + parent[0]->name + " " + to_string(this->val) + " " + name;
+    }
+
+    return s;
+}
+
 Layer *LSum::share(int c, int bs, vector<Layer *> p) {
   LSum *n;
   if (binary)

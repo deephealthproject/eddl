@@ -68,6 +68,8 @@ public:
 
     string plot(int c) override;
 
+    string describe() override;
+
     static void reset_name_counter();
 
     void enable_distributed() override;

@@ -90,3 +90,11 @@ string LMaxPool::plot(int c) {
 
     return s;
 }
+
+string LMaxPool::describe() {
+    string s;
+
+    s = "MaxPool " + parent[0]->name + " " +  printVector(pd->ksize) + " " + printVector(pd->stride) + " " + printVector(pd->pad) + " " + name;
+
+    return s;
+}
