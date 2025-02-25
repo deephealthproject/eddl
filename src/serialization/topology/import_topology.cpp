@@ -7,10 +7,28 @@
 #include <tuple>
 #include "eddl/serialization/topology/import_topology.h"
 
-
 using namespace eddl;
 
-tuple<Layer *,string> create_layer(string params){
+map<int, string> map_da_modes = {
+    {0, "constant"},
+    {1, "reflect"},
+    {2, "nearest"},
+    {3, "mirror"},
+    {4, "wrap"},
+    {5, "original"}
+};
+
+map<int, string> map_coord_trans = {
+    {0, "half_pixel"},
+    {1, "pytorch_half_pixel"},
+    {2, "align_corners"},
+    {3, "asymmetric"},
+    {4, "tf_crop_and_resize"},
+};
+
+map<string, Layer *> map_layers;
+
+tuple<Layer *,string> create_layer(string params, string file_path){
 
     Layer *out_layer;
     string layer_name;
@@ -21,15 +39,11 @@ tuple<Layer *,string> create_layer(string params){
     
     getline( ss_layer, layer_type, ' ' );
 
-    cout << layer_type << endl;
-
     if (layer_type == "Input"){
         std::vector<int> dimensions;
         string input_dims;
 
         getline( ss_layer, input_dims, ' ' );
-
-        cout << input_dims.substr(input_dims.find("{") + 1, input_dims.find("}")-1) << endl;
 
         dimensions = parse_vector(input_dims.substr(input_dims.find("{") + 1, input_dims.find("}")-1), dimensions, ',');
         dimensions.erase(dimensions.begin());
@@ -115,7 +129,6 @@ tuple<Layer *,string> create_layer(string params){
         strides = parse_vector(aux, strides, ',');
 
         getline( ss_layer, padding, ' ' );
-        cout << padding << endl;
 
         getline( ss_layer, aux, ' ' );
         
@@ -160,7 +173,6 @@ tuple<Layer *,string> create_layer(string params){
         string mult_type;
         string aux;
         getline( ss_layer, mult_type, ' ' );
-        cout << mult_type << endl;
         if(mult_type == "1"){
             layer parent_1;
             layer parent_2;
@@ -184,7 +196,7 @@ tuple<Layer *,string> create_layer(string params){
             parent_layer = map_layers[aux];
 
             getline( ss_layer, aux, ' ' );
-            const_tensor = Tensor::load(aux);
+            const_tensor = Tensor::load(file_path + "/" + aux);
 
 
             getline( ss_layer, layer_name, ' ' );
@@ -221,7 +233,6 @@ tuple<Layer *,string> create_layer(string params){
         string add_type;
         string aux;
         getline( ss_layer, add_type, ' ' );
-        cout << add_type << endl;
         if(add_type == "1"){
             layer parent_1;
             layer parent_2;
@@ -249,7 +260,6 @@ tuple<Layer *,string> create_layer(string params){
         
         layer_str = parse_vector_str(aux.substr(aux.find("{") + 1, aux.find("}")-1), layer_str, ',');
         for(int i=0; i<layer_str.size(); i++){
-            cout << layer_str[i] << endl;
             layer_vec.push_back(map_layers[layer_str[i]]);
         }
 
@@ -340,7 +350,6 @@ tuple<Layer *,string> create_layer(string params){
         
         layer_str = parse_vector_str(aux.substr(aux.find("{") + 1, aux.find("}")-1), layer_str, ',');
         for(int i=0; i<layer_str.size(); i++){
-            cout << layer_str[i] << endl;
             layer_vec.push_back(map_layers[layer_str[i]]);
         }
 
@@ -395,7 +404,7 @@ tuple<Layer *,string> create_layer(string params){
 
         getline( ss_layer, aux, ' ' );
         
-        constant_tensor = Tensor::load(aux);
+        constant_tensor = Tensor::load(file_path + "/" + aux);
 
         getline( ss_layer, layer_name, ' ' );
         
@@ -408,7 +417,6 @@ tuple<Layer *,string> create_layer(string params){
         string sub_type;
 
         getline( ss_layer, sub_type, ' ' );
-        cout << sub_type << endl;
         if (sub_type == "1"){
             layer parent1;
             layer parent2;
@@ -433,7 +441,7 @@ tuple<Layer *,string> create_layer(string params){
 
             getline( ss_layer, aux, ' ' );
             
-            const_tensor = Tensor::load(aux);
+            const_tensor = Tensor::load(file_path + "/" + aux);
 
             getline( ss_layer, aux, ' ' );
             
@@ -451,7 +459,6 @@ tuple<Layer *,string> create_layer(string params){
         string div_type;
 
         getline( ss_layer, div_type, ' ' );
-        cout << div_type << endl;
         if (div_type == "1"){
             layer parent1;
             layer parent2;
@@ -521,12 +528,14 @@ Net *import_net_topology(string path){
     vector<Layer *> model_input;
     vector<Layer *> model_output;
 
+    std::size_t botDirPos = path.find_last_of("/");
+    std::string dir = path.substr(0, botDirPos);
+
     ifstream MyReadFile(path);
-    map_layers.clear();
 
     
     while (getline (MyReadFile, file_text)) {
-        tuple<Layer *,string> parsed_layer = create_layer(file_text);
+        tuple<Layer *,string> parsed_layer = create_layer(file_text, dir);
         if(std::get<1>(parsed_layer) == "input"){
             model_input.push_back(std::get<0>(parsed_layer));
         } else if(std::get<1>(parsed_layer) == "output"){
