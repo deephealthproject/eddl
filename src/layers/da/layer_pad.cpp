@@ -77,3 +77,13 @@ string LPad::plot(int c) {
 
     return s;
 }
+
+string LPad::describe(){
+    string s;
+
+    s = "LPad " + parent[0]->name + " " + printVector<int>(this->padding) + " " + to_string(this->constant) + " " \
+    + name + " " + to_string(this->dev) + " " + to_string(0);
+
+    
+    return s;
+}

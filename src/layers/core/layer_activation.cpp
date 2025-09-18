@@ -383,7 +383,9 @@ string LActivation::describe(){
         s = "Softmax " + parent[0]->name + " " + to_string(this->params[0]) + " " + name;
     } else if(this->act == "sigmoid"){
         s = "Sigmoid " + parent[0]->name + " " + name;
-    }
+    } else if(this->act == "relu"){
+        s = "ReLu " + parent[0]->name + " " + name;
+    } 
     
     return s;
 }

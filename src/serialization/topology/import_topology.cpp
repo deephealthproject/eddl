@@ -98,6 +98,17 @@ tuple<Layer *,string> create_layer(string params, string file_path){
         out_layer = Softmax(parent_layer, axis, layer_name);
         map_layers[layer_name] = out_layer;
  
+    } else if (layer_type == "ReLu"){
+        layer parent_layer;
+        string aux;
+
+        getline( ss_layer, aux, ' ' );
+        parent_layer = map_layers[aux];
+        getline( ss_layer, layer_name, ' ' );
+
+        out_layer = ReLu(parent_layer, layer_name);
+        map_layers[layer_name] = out_layer;
+ 
     } else if (layer_type == "LConv"){
         layer parent_layer;
         int filters;
@@ -339,6 +350,29 @@ tuple<Layer *,string> create_layer(string params, string file_path){
         
 
         out_layer = Resize(parent_layer, new_shape, reshape, da_mode, constant, coord_mode, layer_name);
+        map_layers[layer_name] = out_layer;
+
+    } else if (layer_type == "LPad"){
+        string aux;
+        layer parent_layer;
+        vector<int> paddings;
+        float constant;
+
+        getline( ss_layer, aux, ' ' );
+        
+        parent_layer = map_layers[aux];
+
+        getline( ss_layer, aux, ' ' );
+        
+        paddings = parse_vector(aux, paddings, ',');
+
+        getline( ss_layer, aux, ' ' );
+        
+        constant = stof(aux);
+        
+        getline( ss_layer, layer_name, ' ' );
+
+        out_layer = Pad(parent_layer, paddings, constant, layer_name);
         map_layers[layer_name] = out_layer;
 
     } else if (layer_type == "MergeAdd"){
