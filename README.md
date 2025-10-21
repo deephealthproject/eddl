@@ -172,6 +172,8 @@ git checkout develop_rebecca
 mkdir build
 cd build
 cmake .. -DBUILD_TARGET=CPU -DBUILD_HPC=OFF -DBUILD_SUPERBUILD=ON -DBUILD_EXAMPLES=OFF -DProtobuf_INCLUDE_DIRS=${PROTOBUF_INCLUDE_DIRS} -DEIGEN3_INCLUDE_DIR=${EIGEN_INCLUDE_DIRS}
+make -j$(nproc)
+sudo make install
 ```
 
 ## Getting started [here](https://deephealthproject.github.io/eddl/usage/getting_started.html)
