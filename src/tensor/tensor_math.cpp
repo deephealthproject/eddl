@@ -2180,10 +2180,20 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::add_");
     if ((!sameShape(A, B)) || (!sameShape(A, C))) {
-        A->info();
-        B->info();
-        C->info();
-        msg("Incompatible dims", "Tensor::add");
+        //A->info();
+        //B->info();
+        //C->info();
+        printf("Incompatible dims (Tensor::el_mult) \n");
+
+        printf("Trying to broadcast... \n");
+        if (A->shape[0] < B->shape[0]){
+            printf("A can be constant. Broadcasting A.\n");
+            A = Tensor::broadcast(A,B);
+        }
+        else {
+            printf("B can be constant. Broadcasting B.\n");
+            B = Tensor::broadcast(B,A);
+        }
     }
 
 
@@ -2322,13 +2332,22 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
     PROFILING_HEADER_EXTERN(el_mult);
 
-
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
     if ((!sameShape(A, B)) || (!sameShape(A, C))) {
-        A->info();
-        B->info();
-        C->info();
-        msg("Incompatible dims", "Tensor::el_mult");
+        //A->info();
+        //B->info();
+        //C->info();
+        printf("Incompatible dims (Tensor::el_mult) \n");
+
+        printf("Trying to broadcast... \n");
+        if (A->shape[0] < B->shape[0]){
+            printf("A can be constant. Broadcasting A.\n");
+            A = Tensor::broadcast(A,B);
+        }
+        else {
+            printf("B can be constant. Broadcasting B.\n");
+            B = Tensor::broadcast(B,A);
+        }
     }
 
     if (A->isCPU()) {
