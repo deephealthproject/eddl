@@ -28,6 +28,8 @@ This branch makes several changes from `main` branch to address specific challen
 
 - **Model Export:** This branch adds the ability to export a model's complete architecture (topology), not just its weights.
 
+- **Broadcasting Support** Tensor element-wise operators (currently `el_mult` and `add`) now support automatic broadcasting. If the input tensors do not share the same shape (in terms of batch size), the smaller one is automatically expanded so the operation can still be performed.
+
 
 ### Exporting a Model
 
