@@ -20,7 +20,9 @@ Please note that EDDL is an ambitious project with few hands on it. Our short-te
 
 ## Key Differences from `main`
 
-This branch makes several changes from `main` branch to address specific challenges and constraints from the [REBECCA-Chip Project](https://www.rebecca-chip.eu/). The key enhancements are:
+This branch makes several changes from the `develop_rebecca` branch, specific for the [REBECCA-Chip Project](https://www.rebecca-chip.eu/).
+This new sub-branch addresses specific challenges and constraints from the [EdgeAI-Trust](https://www.edgeai-trust.eu/project/).
+The key enhancements are:
 
 - **Dependency Installation:** Some dependencies are not bundled with the EDDL installation and must be installed separately.
 
@@ -168,7 +170,7 @@ export EIGEN_INCLUDE_DIRS=/usr/local/include/eigen3
 
 git clone https://github.com/deephealthproject/eddl.git
 cd eddl/
-git checkout develop_rebecca
+git checkout develop_edgeai
 mkdir build
 cd build
 cmake .. -DBUILD_TARGET=CPU -DBUILD_HPC=OFF -DBUILD_SUPERBUILD=ON -DBUILD_EXAMPLES=OFF -DProtobuf_INCLUDE_DIRS=${PROTOBUF_INCLUDE_DIRS} -DEIGEN3_INCLUDE_DIR=${EIGEN_INCLUDE_DIRS}
