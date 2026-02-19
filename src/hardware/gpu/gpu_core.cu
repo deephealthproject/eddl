@@ -402,9 +402,8 @@ void gpu_concat(Tensor *A, vector<Tensor*> t, unsigned int axis, bool derivative
 
         setDims(t[i]);
         concat<<<dimGrid,dimBlock>>>(dest, src, t[i]->size, src_stride, steps, derivative);
-        check_cuda(cudaDeviceSynchronize(),"gpu_concat");
-
     }
+    // check_cuda(cudaDeviceSynchronize(),"gpu_concat");
 }
 
 
