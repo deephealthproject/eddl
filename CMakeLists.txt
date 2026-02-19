@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.9.2)
 option(BUILD_SUPERBUILD "Compile using the superbuild system" OFF)
 option(BUILD_RISCV "Compile for a RISCV cpu" OFF)
 option(BUILD_PROTOBUF "Compile using Protobuf" ON)
-option(BUILD_OPENMP "Compile using OpenMP" ON)
+option(BUILD_OPENMP "Compile using OpenMP" OFF)
 option(BUILD_HPC "Compile using aggressive flags for performance" ON)
 option(BUILD_TESTS "Compile tests (HPC needs to be disabled)" OFF)  # Disable HPC to pass tests (there are numerical errors)
 option(BUILD_EXAMPLES "Compile examples" ON)
@@ -23,7 +23,7 @@ if(WIN32)
 else()
     option(BUILD_SHARED_LIBS "Global flag to cause add_library to create shared libraries if on" ON)
 endif()
-
+set(CMAKE_CUDA_ARCHITECTURES "native")
 ###########################################################################
 ################################# BUILD ###################################
 ###########################################################################
