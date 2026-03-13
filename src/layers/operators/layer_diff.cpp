@@ -82,7 +82,6 @@ LDiff::LDiff(Layer *l, float k, string name, int dev, int mem) : OperatorLayer(n
 
   */
 LDiff::LDiff(Tensor *t, Layer *l, string name, int dev, int mem) : OperatorLayer(name, dev, mem) {
-  std::cout << "Nuevo Constructor LDiff" << std::endl;
   if(name.empty()) this->name = "diff_" + to_string(++total_layers);
   binary=1;
   input= l->output;

@@ -22,7 +22,6 @@ Layer* build_mul_layer(onnx::NodeProto *node,
   {
     second_operator_scalars = map_init_values[second_operator_name];
     if (second_operator_scalars.size() > 1) {
-      std::cout << "Segundo operador constante" << std::endl;
 
       // vector<int> shape_second_op = second_operator->getShape();
       vector<int> shape_first_op  = first_operator->getShape();
@@ -44,7 +43,6 @@ Layer* build_mul_layer(onnx::NodeProto *node,
         for (size_t i = 1; i < shape_first_op.size(); ++i) {
           if (shape_first_op[i] != shape_second_op[i]) {
             dim = i;
-            std::cout << "La dimensión diferente es la " << i << std::endl;
             break;
           }
         }
