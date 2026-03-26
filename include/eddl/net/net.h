@@ -63,6 +63,7 @@ public:
     bool isresized;
     bool decoder_teacher_training;
     int decsize;
+    vector<vector<int>> orig_input_shape;
 
     vector<int> devsel;
     CompServ *cs;

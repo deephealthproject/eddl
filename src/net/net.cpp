@@ -72,6 +72,7 @@ Net::Net() {
     decsize=1;
     do_compserv_delete = true;
     do_optimizer_delete = true;
+    orig_input_shape = {{}};
 }
 
 Net::Net(vlayer in, vlayer out):Net() {

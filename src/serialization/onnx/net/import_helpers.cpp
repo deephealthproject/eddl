@@ -603,6 +603,20 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
   log_model_metadata(model, log_level);
   onnx::GraphProto graph = model.graph(); // Get the graph of the model.
 
+  vector<vector<int>> orig_input_shape;
+
+  // Extract original model input shape
+  for (int i = 0; i < graph.input_size(); i++)
+  {
+    onnx::ValueInfoProto input = graph.input(i);
+    onnx::TensorShapeProto shape = input.type().tensor_type().shape();
+    vector<int> aux_shape;
+    for (int j = 0; j < shape.dim_size(); j++){
+      aux_shape.push_back(shape.dim(j).dim_value());
+    }
+    orig_input_shape.push_back(aux_shape);
+  }
+
   vector<onnx::ValueInfoProto> inputs_onnx = get_inputs(graph); // Get input nodes data
   vector<onnx::NodeProto> nodes = get_graph_nodes(graph); // Get the nodes (layers) of the model
   bool recurrent_net = check_recurrent_nodes(nodes);
@@ -704,6 +718,10 @@ Net *build_net_onnx(onnx::ModelProto model, vector<int> input_shape, int mem, LO
     output_layers.push_back(output_node_map[output_names[i]]);
 
   Net *imported_net = new Net(model_input_layers, output_layers);
+
+  if(recurrent_net){
+    imported_net->orig_input_shape = orig_input_shape;
+  }
 
   log_string("Finished importing net from ONNX", log_level, LOG_LEVEL::DEBUG);
   return imported_net;
