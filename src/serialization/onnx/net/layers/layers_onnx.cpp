@@ -308,7 +308,7 @@ Layer* build_layer_from_node(onnx::NodeProto *node,
       new_layer = handle_cast_node(node, output_node_map, log_level, dev, mem);
       break;
     case ONNX_LAYERS::GATHER:
-      new_layer = handle_gather_node(node, map_init_values, map_init_dims, output_node_map, log_level, dev, mem);
+      new_layer = handle_gather_node(node, map_init_values, map_init_dims, output_node_map, recurrent_net, log_level, dev, mem);
       break;
     case ONNX_LAYERS::SQUEEZE:
       new_layer = build_squeeze_layer(node, output_node_map, log_level, dev, mem);

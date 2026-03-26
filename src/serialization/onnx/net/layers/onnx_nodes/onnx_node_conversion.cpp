@@ -31,11 +31,21 @@ Layer* handle_gather_node(onnx::NodeProto *node,
                           map<string, vector<float>> &map_init_values,
                           map<string, vector<int>> &map_init_dims,
                           map<string, Layer *> &output_node_map,
+                          bool recurrent_net,
                           LOG_LEVEL log_level,
                           int dev,
                           int mem)
 {
   log_string("Gather layer detected", log_level, LOG_LEVEL::DEBUG);
+
+  if(recurrent_net){ //Gather operation not required for recurrent models
+    string parent_name;
+    parent_name = node->input(0);
+    Layer *parent = output_node_map[parent_name];
+
+    return parent;
+  }
+
   int axis = 0; // Default value is 0
   for (int j = 0; j < node->attribute_size(); j++)
   { // Set the attributes

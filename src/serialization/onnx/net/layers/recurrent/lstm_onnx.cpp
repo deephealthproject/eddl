@@ -82,14 +82,15 @@ Layer* build_lstm_layer(onnx::NodeProto *node,
    */
   bool is_decoder = node_is_decoder(node, input_node_map);
 
-  if (is_decoder && node->input_size() > 5)
-  {
-    log_string("The layer " + name + " is decoder", log_level, LOG_LEVEL::DEBUG);
-    // We have to create the copy states layer for the decoder
-    Layer *parent_hstate = output_node_map[node->input(5)]; // 5: hidden state
-    Layer *cps = new LCopyStates({parent_hstate}, "", dev, mem);
-    parents.push_back(cps); // Add the layer to the parents for the LSTM
-  }
+  // Removed this code to fix stacked LSTM issues
+  // if (is_decoder && node->input_size() > 5)
+  // {
+  //   log_string("The layer " + name + " is decoder", log_level, LOG_LEVEL::DEBUG);
+  //   // We have to create the copy states layer for the decoder
+  //   Layer *parent_hstate = output_node_map[node->input(5)]; // 5: hidden state
+  //   Layer *cps = new LCopyStates({parent_hstate}, "", dev, mem);
+  //   parents.push_back(cps); // Add the layer to the parents for the LSTM
+  // }
 
   if (hidden_size < 0)
     msg("The layer " + name + " (LSTM) does not provide the hidden_size attribute.", "[ONNX::ImportNet]");
