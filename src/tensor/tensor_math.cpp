@@ -2179,7 +2179,14 @@ void Tensor::add(float scA, Tensor *A, float scB, Tensor *B, Tensor *C, int incC
     PROFILING_HEADER_EXTERN(add);
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::add_");
-    if ((!sameShape(A, B)) || (!sameShape(A, C))) {
+    if (!sameShape(A, B)) {
+        if (A->shape[0] < B->shape[0]){
+            A = Tensor::tile(A, {B->shape[0], 1, 1});
+        }
+        else {
+            B = Tensor::tile(B, {A->shape[0], 1, 1});
+        }
+    } else if (!sameShape(A, C)) {
         A->info();
         B->info();
         C->info();
@@ -2324,12 +2331,21 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
 
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
-    if ((!sameShape(A, B)) || (!sameShape(A, C))) {
+    
+    if (!sameShape(A, B)) {
+        if (A->shape[0] < B->shape[0]){
+            A = Tensor::tile(A, {B->shape[0], 1, 1});
+        }
+        else {
+            B = Tensor::tile(B, {A->shape[0], 1, 1});
+        }
+    } else if (!sameShape(A, C)) {
         A->info();
         B->info();
         C->info();
         msg("Incompatible dims", "Tensor::el_mult");
     }
+    
 
     if (A->isCPU()) {
         cpu_el_mult(A, B, C, incC);
