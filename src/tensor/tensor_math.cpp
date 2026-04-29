@@ -2329,7 +2329,6 @@ void Tensor::el_mult(Tensor *A, Tensor *B, Tensor *C, int incC) {
 
     PROFILING_HEADER_EXTERN(el_mult);
 
-
     if ((A->device != B->device) || (A->device != C->device)) msg("Tensors in different devices", "Tensor::el_mult");
     
     if (!sameShape(A, B)) {
