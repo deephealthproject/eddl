@@ -75,7 +75,7 @@ static const char *_curandGetErrorEnum(curandStatus_t error){
         case CURAND_STATUS_LENGTH_NOT_MULTIPLE:
             return "CURAND_STATUS_LENGTH_NOT_MULTIPLE";
         default:
-            std::string text = "unknown curand error: " + std::to_string(error) + " | (_curandGetErrorEnum)";
+            std::string text = "EDDL: unknown curand error: " + std::to_string(error) + " | (_curandGetErrorEnum)";
             throw std::invalid_argument(text);
     }
 
@@ -85,7 +85,7 @@ void check_cublas(cublasStatus_t status, const char *f)
 {
     if ( status!=  CUBLAS_STATUS_SUCCESS)
     {
-        std::string text = "error in cublas execution in " + std::string(f) + " | (check_cublas)";
+        std::string text = "EDDL: error in cublas execution in " + std::string(f) + " | (check_cublas)";
         throw std::runtime_error(text);
     }
 }
@@ -94,7 +94,7 @@ void check_curand(curandStatus_t status, const char *f)
 {
     if ( status!=  CURAND_STATUS_SUCCESS)
     {
-        std::string text = "error in curand execution in " + std::string(_curandGetErrorEnum(status)) + " | (check_curand)";
+        std::string text = "EDDL: error in curand execution in " + std::string(_curandGetErrorEnum(status)) + " | (check_curand)";
         throw std::runtime_error(text);
     }
 }
@@ -105,7 +105,7 @@ void check_cuda(cudaError_t err,const char *msg)
     if(err!=cudaSuccess)
     {
         std::string error_type = cudaGetErrorString(err);
-        std::string text = "[CUDA ERROR]: " + error_type + " ("+ std::to_string(err) + ") raised in " + std::string(msg) + " | (check_cuda)";
+        std::string text = "EDDL [CUDA ERROR]: " + error_type + " ("+ std::to_string(err) + ") raised in " + std::string(msg) + " | (check_cuda)";
         throw std::runtime_error(text);
     }
 
@@ -118,7 +118,7 @@ void check_cudnn(cudnnStatus_t status, const char *msg, const char *file, int li
     if (status != CUDNN_STATUS_SUCCESS)
     {
         std::string error_type = cudnnGetErrorString(status);
-        std::string text = "[CUDNN ERROR]: " + error_type + " ("+ std::to_string(status) + ") raised in " + std::string(msg) + " at " + std::string(file) + " file: " +std::to_string(line) +" line. | (check_cudnn)"    ;
+        std::string text = "EDDL [CUDNN ERROR]: " + error_type + " ("+ std::to_string(status) + ") raised in " + std::string(msg) + " at " + std::string(file) + " file: " +std::to_string(line) +" line. | (check_cudnn)"    ;
         throw std::runtime_error(text);
     }
 }
@@ -138,17 +138,17 @@ void gpu_init(int device)
 
     if (device>nDevices)
     {
-        std::string text = "GPU " + std::to_string(device) + " not available. Number of available GPUs is " + std::to_string(nDevices) + ". Further information running nvidia-smi  | (gpu_init)";
+        std::string text = "EDDL: GPU " + std::to_string(device) + " not available. Number of available GPUs is " + std::to_string(nDevices) + ". Further information running nvidia-smi  | (gpu_init)";
         throw std::runtime_error(text);
     }
 
-    fprintf(stderr,"Selecting GPU device %d\n",device);
+    fprintf(stderr,"EDDL: Selecting GPU device %d\n",device);
     cudaSetDevice(device);
 
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop,device);
 
-    fprintf(stderr,"EDDL is running on GPU device %d, %s\n",device,prop.name);
+    fprintf(stderr,"EDDL: running on GPU device %d, %s\n",device,prop.name);
 
 
     /// CUBLAS
@@ -163,15 +163,15 @@ void gpu_init(int device)
 
     if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
     {
-        std::string text = "problem in cublas create (gpu_init)";
+        std::string text = "EDDL: problem in cublas create (gpu_init)";
         throw std::runtime_error(text);
     }
-    fprintf(stderr,"CuBlas initialized on GPU device %d, %s\n",device,prop.name);
+    fprintf(stderr,"EDDL: CuBlas initialized on GPU device %d, %s\n",device,prop.name);
 
     bstatus = cublasSetAtomicsMode(hcublas[device],CUBLAS_ATOMICS_NOT_ALLOWED);
     if ( bstatus!=  CUBLAS_STATUS_SUCCESS)
     {
-        std::string text = "problem in cublas execution getting: NOT IMPLEMENTED |  (gpu_init)";
+        std::string text = "EDDL: problem in cublas execution getting: NOT IMPLEMENTED |  (gpu_init)";
         throw std::runtime_error(text);
     }
 
@@ -179,25 +179,25 @@ void gpu_init(int device)
     rstatus=curandCreateGenerator(&(random_generator[device]),CURAND_RNG_PSEUDO_MRG32K3A);
     if (rstatus != CURAND_STATUS_SUCCESS)
     {
-        std::string text = "error creating random numbers on gpu | (gpu_init)";
+        std::string text = "EDDL: error creating random numbers on gpu | (gpu_init)";
         throw std::runtime_error(text);
     }
     rstatus=curandSetPseudoRandomGeneratorSeed(random_generator[device],1234);
 
     if (rstatus != CURAND_STATUS_SUCCESS) {
-        std::string text = "error setting the seed for program | (gpu_init)";
+        std::string text = "EDDL: error setting the seed for program | (gpu_init)";
         throw std::runtime_error(text);
     }
-    fprintf(stderr,"CuRand initialized on GPU device %d, %s\n",device,prop.name);
+    fprintf(stderr,"EDDL: CuRand initialized on GPU device %d, %s\n",device,prop.name);
 #ifdef cCUDNN
     // CUDNN
     dstatus=cudnnCreate(&hdnn[device]);
     if (dstatus != CUDNN_STATUS_SUCCESS) {
-        std::string text = "problem in cudnn create (gpu_init)";
+        std::string text = "EDDL: problem in cudnn create (gpu_init)";
         throw std::runtime_error(text);
     }
 
-    fprintf(stderr,"CuDNN initialized on GPU device %d, %s\n",device,prop.name);
+    fprintf(stderr,"EDDL: CuDNN initialized on GPU device %d, %s\n",device,prop.name);
 
 #endif
 

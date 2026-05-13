@@ -147,9 +147,9 @@ void Net::build(Optimizer *opt, vloss lo, vmetrics me, CompServ *cs,
   if (isbuild) return;
 
   if (!initialize) {
-    std::cerr<<"Building "<<name<<" without initialization" << std::endl;
+    std::cerr<<"EDDL: Building "<<name<<" without initialization" << std::endl;
   }else{
-      std::cerr<<"Building " << name << std::endl;
+      std::cerr<<"EDDL: Building " << name << std::endl;
   }
 /*
   for(int i=0;i<layers.size();i++) {
@@ -401,12 +401,11 @@ void Net::split(int c, int todev) {
         snets[i]->name=cname;
         snets[i]->make_graph(optimizer->clone(), this->losses, this->metrics);
         if(onnx_pretrained){ //We need to copy the imported weights to each snet
-            fprintf(stderr,"copying onnx params to devices\n");
+            fprintf(stderr,"EDDL: copying onnx params to devices\n");
             for(int i = 0; i < snets.size(); i++)
                 for(int j = 0; j < layers.size(); j++)
                     layers[j]->copy(snets[i]->layers[j]);
         }
-        snets[i]->plot("smodel.pdf","LR");
     }
 }
 

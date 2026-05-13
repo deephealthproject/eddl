@@ -72,7 +72,6 @@ Layer* build_diff_layer(onnx::NodeProto *node,
   // }
   else // T - T
   {
-    std::cout << "LDiff build_diff_layer 5ª condición" << std::endl;
     Layer *first_operator = output_node_map[first_operator_name];
     Layer *second_operator = output_node_map[second_operator_name];
     // first_operator->info();

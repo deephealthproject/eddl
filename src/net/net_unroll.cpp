@@ -58,8 +58,6 @@ Net* Net::unroll_enc(int inl, int outl) {
   vlayer par;
   vector<bool> frnn;
 
-  cout<<"Recurrent net input sequence length="<<inl<<endl;
-
   vlayer backup(layers);
 
   // set vfts sort
@@ -570,7 +568,7 @@ void Net::build_rnet(int inl,int outl) {
 
    rnet->build(optimizer->share(), lr, mr, cs->share(), false, true, true);
 
-   rnet->plot("rmodel.pdf","LR");
+   // rnet->plot("rmodel.pdf","LR");
    rnet->name="rnet";
 
    if (cs->local_gpus.size() > 0) todev = DEV_GPU;
@@ -603,7 +601,7 @@ void Net::build_rnet(int inl,int outl) {
        rnet->snets[i]->isrecurrent=false;
 
        rnet->snets[i]->make_graph(snets[i]->optimizer->share(),lr,mr,false);
-       rnet->snets[i]->plot("rsnet.pdf","LR");
+       //rnet->snets[i]->plot("rsnet.pdf","LR");
        for(j=0;j<rnet->snets[i]->layers.size();j++) {
              rnet->snets[i]->layers[j]->orig=rnet->layers[j];
              rnet->snets[i]->layers[j]->net=rnet;

@@ -57,17 +57,17 @@ CompServ::CompServ(int threads, const vector<int>& gpus, const vector<int> &fpga
 
     // Check: Synchronization value
     if (this->lsb < 0) {
-        throw std::runtime_error("Error creating CS with lsb<0 in CompServ::CompServ");
+        throw std::runtime_error("EDDL: Error creating CS with lsb<0 in CompServ::CompServ");
     }
 
     // Check: memory level
     if ((this->mem_level < 0) || (this->mem_level > 2)) {
-        std::cerr << "Error creating CS with incorrect memory saving level param in CompServ::CompServ" << std::endl;
+        std::cerr << "EDDL: Error creating CS with incorrect memory saving level param in CompServ::CompServ" << std::endl;
         exit(EXIT_FAILURE);
     }else {
-        if (this->mem_level==0) { std::cerr << "CS with full memory setup" << std::endl; }
-        else if (this->mem_level==1) { std::cerr << "CS with mid memory setup" << std::endl; }
-        else if (this->mem_level==2) { std::cerr << "CS with low memory setup" << std::endl; }
+        if (this->mem_level==0) { std::cerr << "EDDL: CS with full memory setup" << std::endl; }
+        else if (this->mem_level==1) { std::cerr << "EDDL: CS with mid memory setup" << std::endl; }
+        else if (this->mem_level==2) { std::cerr << "EDDL: CS with low memory setup" << std::endl; }
     }
 
     // Check: Max device supported
@@ -75,7 +75,7 @@ CompServ::CompServ(int threads, const vector<int>& gpus, const vector<int> &fpga
     if(hw_value=="gpu") { hw_value = "cuda"; }  // gpu could be both "cuda" and "cudnn"
     bool hw_found = std::find(this->hw_supported.begin(), this->hw_supported.end(), hw_value) != this->hw_supported.end();
     if (!hw_found){
-        throw std::runtime_error("[Hardware not supported]: This library is not compiled for '" + this->hw + "'");
+        throw std::runtime_error("EDDL [Hardware not supported]: This library is not compiled for '" + this->hw + "'");
     }
 
 }
@@ -92,6 +92,6 @@ CompServ* CompServ::clone() {
 
 // for Distributed
 CompServ::CompServ(const string& filename) {
-    std::cerr << "Not implemented error [Computing service with filename]" << std::endl;
+    std::cerr << "EDDL: Not implemented error [Computing service with filename]" << std::endl;
 }
 
